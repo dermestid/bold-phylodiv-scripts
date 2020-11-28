@@ -13,8 +13,8 @@ if ($WINDOWS) {
 	$CLUSTAL_PATH = '\\"Program Files (x86)"\\ClustalW2\\clustalw2';
 	$PAUP_PATH = '%appdata%\\PAUP4\\paup4';
 }
+$PAUP_COMMANDS_PATH = __DIR__ .DIRECTORY_SEPARATOR. 'paup_commands_template.txt';
 
-$PAUP_COMMANDS_PATH = 'paup_commands_template.txt';
 $MARKER = 'COI-5P';
 $USE_COORDS = true;
 $LATITUDE_GRID_SIZE_DEG = 30;
@@ -38,34 +38,24 @@ function location_string($country, $lat, $lon) {
 	}
 }
 
-// Get command line args
-// List of arguments:
-// 1. Taxonomic group as understood by BOLD (required)
-// 2. Sample number of taxa to choose and build a tree with for each location
-// 3. Path to Clustal executable
-// 4. Path to PAUP executable
+$args = array(
+	'SCRIPT_PATH',
+	'taxon_group',
+	'SAMPLE_NUMBER',
+	'LATITUDE_GRID_SIZE_DEG',
+	'LONGITUDE_GRID_SIZE_DEG',
+	'CLUSTAL_PATH',
+	'PAUP_PATH');
 
-if(!isset($argc)) {
-	exit("argc and argv disabled");
+if(!isset($argc)) {exit("argc and argv disabled");}
+if($argc > count($args)) { exit("Wrong number of arguments given");}
+if(!($i = $argc - 1)) {exit("No arguments given");}
+
+while($i) {
+	${$args[$i]} = $argv[$i];
+	echo('set '. $args[$i] . ' to ' . $argv[$i] . PHP_EOL);
+	$i--;
 }
-
-switch($argc) {
-	case 5:
-		$PAUP_PATH = $argv[4];
-	case 4:
-		$CLUSTAL_PATH = $argv[3];
-	case 3:
-		$SAMPLE_NUMBER = $argv[2];		
-	case 2:
-		$taxon_group = $argv[1];
-	break;
-	case 1:
-		exit("No arguments given");
-	break;
-	default:
-		exit("Wrong number of arguments given");
-}
-
 
 // Set up paths to sequences
 
@@ -104,7 +94,6 @@ function make_tree($infile) {
 	global $PAUP_PATH;
 
 	// First build the nexus file of commands
-	// TODO #3 this should be in a separate file for easier maintenance
 	$nexus = file_get_contents($infile) . PHP_EOL . file_get_contents($PAUP_COMMANDS_PATH);
 
 	$basename = preg_replace('/\..*$/', '', $infile);
