@@ -12,10 +12,13 @@ List of command line arguments:
   * If there are spaces, enclose the argument in quotes `" "` or replace spaces with URI encoding character `%20`
 2. Optionally, the number of subsamples to take from sequences obtained. 
   * Default = 20.
-  
+
 Optionally, the size of the grid squares to separate sequences by:
+
 3. Latitude (width) of grid squares
+  * Default = 30
 4. Longitude (height) of grid squares
+  * Default = 30
 5. Optionally, the path to the Clustal executable.
   * Default = `\"Program Files (x86)"\ClustalW2\clustalw2` on windows, and `/usr/local/bin/clustalw2` otherwise
 6. Optionally, the path to the PAUP executable.
