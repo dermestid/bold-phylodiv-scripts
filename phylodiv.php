@@ -103,6 +103,7 @@ function make_tree($infile) {
 	global $PAUP_PATH;
 
 	// First build the nexus file of commands
+	// TODO #3 this should be in a separate file for easier maintenance
 	$nexus = file_get_contents($infile) . '
 	[PAUP block]
 	begin paup;
@@ -161,6 +162,7 @@ function tree_length($tree_filename) {
 
 // First get hold of the sequences, if they're not downloaded already
 
+// TODO #4 the sequences should only be downloaded once for potentially different geographical division schemes
 if(!file_exists($sequences_list_file)) {
 	echo('List of sequence files not found, downloading sequences for ' . $taxon_group . PHP_EOL);
 
