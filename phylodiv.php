@@ -14,6 +14,7 @@ if ($WINDOWS) {
 	$PAUP_PATH = '%appdata%\\PAUP4\\paup4';
 }
 
+$PAUP_COMMANDS_PATH = 'paup_commands_template.txt';
 $MARKER = 'COI-5P';
 $USE_COORDS = true;
 $LATITUDE_GRID_SIZE_DEG = 30;
@@ -103,22 +104,8 @@ function make_tree($infile) {
 	global $PAUP_PATH;
 
 	// First build the nexus file of commands
-	$nexus = file_get_contents($infile) . '
-	[PAUP block]
-	begin paup;
-		set autoclose=yes warntree=no warnreset=no;
-		[root trees at midpoint]
-		set rootmethod=midpoint;
-		set outroot=monophyl;
-		[construct tree using neighbour-joining]
-		nj;
-		[ensure branch lengths are output as substituions per nucleotide]
-		set criterion=distance;
-		[write rooted trees in Newick format with branch lengths]
-		savetrees format=nexus root=yes brlen=yes replace=yes;
-		quit;
-	end;
-	';
+	// TODO #3 this should be in a separate file for easier maintenance
+	$nexus = file_get_contents($infile) . PHP_EOL . file_get_contents($PAUP_COMMANDS_PATH);
 
 	$basename = preg_replace('/\..*$/', '', $infile);
 	$nex_filename = $basename . '.nex';
@@ -161,6 +148,7 @@ function tree_length($tree_filename) {
 
 // First get hold of the sequences, if they're not downloaded already
 
+// TODO #4 the sequences should only be downloaded once for potentially different geographical division schemes
 if(!file_exists($sequences_list_file)) {
 	echo('List of sequence files not found, downloading sequences for ' . $taxon_group . PHP_EOL);
 
