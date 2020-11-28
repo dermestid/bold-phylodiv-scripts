@@ -11,10 +11,11 @@ List of command line arguments:
   * At phylum, order, class, family, subfamily or genus level, or species binomial. E.g. `Lachninae`, E.g. `Pandion%20haliaetus`
   * If there are spaces, enclose the argument in quotes `" "` or replace spaces with URI encoding character `%20`
 2. Optionally, the number of subsamples to take from sequences obtained. 
-  * Default = 20.
-3. Optionally, the size in degrees of latitude and
-4. Longitude which will be 
-3. Optionally, the path to the Clustal executable.
+  * Default = 20.  
+Optionally, the size of the grid squares to separate sequences by:
+3. Latitude (width) of grid squares
+4. Longitude (height) of grid squares
+5. Optionally, the path to the Clustal executable.
   * Default = `\"Program Files (x86)"\ClustalW2\clustalw2` on windows, and `/usr/local/bin/clustalw2` otherwise
-4. Optionally, the path to the PAUP executable.
+6. Optionally, the path to the PAUP executable.
   * Default = `%appdata%\PAUP4\paup4` on windows, and `/usr/local/bin/paup` otherwise
