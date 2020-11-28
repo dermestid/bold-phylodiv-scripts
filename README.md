@@ -11,7 +11,8 @@ List of command line arguments:
   * At phylum, order, class, family, subfamily or genus level, or species binomial. E.g. `Lachninae`, E.g. `Pandion%20haliaetus`
   * If there are spaces, enclose the argument in quotes `" "` or replace spaces with URI encoding character `%20`
 2. Optionally, the number of subsamples to take from sequences obtained. 
-  * Default = 20.  
+  * Default = 20.
+  
 Optionally, the size of the grid squares to separate sequences by:
 3. Latitude (width) of grid squares
 4. Longitude (height) of grid squares
