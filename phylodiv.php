@@ -1,5 +1,6 @@
 <?php
 
+
 $WINDOWS = (stripos(PHP_OS, 'WIN') === 0);
 
 // Default arguments and constants
