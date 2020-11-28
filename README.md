@@ -4,6 +4,7 @@ Scripts to calculate phylodiversity and its distribution from BOLD DNA barcode d
 ## Usage
 Call the PHP script from the PHP executable with a taxon name and optionally other arguments.
 E.g. `path/to/php phylodiv.php Hexactinellida 10 15 15 path/to/clustalw2 path/to/paup`
+
 List of command line arguments:
 1. Taxonomic name of the group to analyze.
   * At phylum, order, class, family, subfamily or genus level, or species binomial. E.g. `Lachninae`, E.g. `Pandion%20haliaetus`
