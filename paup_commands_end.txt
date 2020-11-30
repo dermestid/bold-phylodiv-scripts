@@ -1,0 +1,4 @@
+[PAUP block]
+begin paup;
+    quit;
+end;
