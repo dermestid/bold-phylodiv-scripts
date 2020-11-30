@@ -53,7 +53,7 @@ function get_sequences($taxon, $marker) {
         return array(false, $taxsets_data_file);
     }
 
-    echo('Downloading sequences for ' . $taxon . PHP_EOL);
+    echo('Downloading sequences for ' . $taxon . '...' . PHP_EOL);
 
     // Open stream handle
     $bold_query = $BOLD_URL_PREFIX . '?'

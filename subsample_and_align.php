@@ -11,7 +11,8 @@ require_once $DIR. 'taxsets_data_file.php';
 // or if any samples are of size 1 and so cannot be aligned.
 function subsample_and_align($subsample_size, $taxon, $taxset_locations) {
     global $MINIMUM_SUBSAMPLE_NUMBER, $LOG_DIR;
-	global $TAXSETS_DATA_DELIMITER, $TAXSET_DELIMITER;
+    global $TAXSETS_DATA_DELIMITER, $TAXSET_DELIMITER;
+    global $TEMP_DIR, $DELETE_TEMP_FILES;
 
     $CLUSTAL_LOG_SUFFIX = '_CLUSTALW.log';
 
@@ -59,24 +60,14 @@ function subsample_and_align($subsample_size, $taxon, $taxset_locations) {
 
         $nexus_string .= file_get_contents($subsample_file_aligned, 0, NULL, $file_offset);
 
-        continue;
+        if ($DELETE_TEMP_FILES)
+        {
+            foreach (glob($TEMP_DIR . $subsample_id .'.*') as $file) {
+                // echo('Deleting '.$file.PHP_EOL);
+                unlink($file);
+            }
+        }
 
-        // Add a taxset string for the sample
-        // Since we're storing multiple taxsets in the same file, add an offset of $taxon_number
-        $taxset = explode($TAXSET_DELIMITER, $subsample_taxset);
-        $current_subsample_size = count($taxset);
-        $taxset = range($taxon_number + 1, $taxon_number + $current_subsample_size);
-        $subsample_taxset = implode($TAXSET_DELIMITER, $taxset);
-
-        $nexus_string .= 
-'
-BEGIN ASSUMPTIONS;
-    taxset ' . $subsample_id . ' = ' . $subsample_taxset . ';
-end;
-';
-
-        $taxon_number += count($taxset);
-        array_push($taxset_names, $subsample_id);
     }
 
     return $nexus_string;
