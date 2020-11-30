@@ -1,0 +1,7 @@
+[PAUP block]
+begin paup;
+    [construct tree using neighbour-joining]
+    nj;
+    [write rooted trees in Newick format with branch lengths]
+    savetrees format=nexus root=yes brlen=yes append=yes;
+end;

@@ -2,7 +2,7 @@
 Scripts to calculate phylodiversity and its distribution from BOLD DNA barcode data.
 
 ## Usage
-Call the PHP script from the PHP executable with a taxon name and optionally other arguments.
+Call the PHP script `phylodiv.php` from the PHP executable with a taxon name and optionally other arguments.
 
 E.g. `path/to/php phylodiv.php Hexactinellida 10 15 15 path/to/clustalw2 path/to/paup`
 
