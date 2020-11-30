@@ -6,7 +6,7 @@
 // Outputs a single NEXUS file of multiple TREE blocks to $tre_filename.
 function make_trees($data, $tree_names, $tre_filename) {
 	global $PAUP_PATH, $PAUP_COMMANDS_SETUP, $PAUP_COMMANDS_TREE, $PAUP_COMMANDS_END;
-	global $TEMP_DIR, $LOG_DIR;
+	global $TEMP_DIR, $LOG_DIR, $DELETE_TEMP_FILES;
 
 	$TREE_DECLARATION_REGEX = "/tree\s+'[^']*'\s*=/i";
 	$DATA_BLOCK_REGEX = '/matrix\s*[^;]*;\s*end\s*;/is';
@@ -39,6 +39,11 @@ function make_trees($data, $tree_names, $tre_filename) {
 	} while (file_exists($nex_filename));
 	file_put_contents($nex_filename, $nexus);
 
+	// Remove any old trees with the same filename
+	if (file_exists($tre_filename)) {
+		unlink($tre_filename);
+	}
+
 	// Run PAUP
 	$command =  $PAUP_PATH . ' ' . $nex_filename .  " 1>" . $LOG_DIR . $nex_id .'.log';
 	system($command);
@@ -56,9 +61,17 @@ function make_trees($data, $tree_names, $tre_filename) {
 			return $decl; };
 		$tree_list = preg_replace_callback($TREE_DECLARATION_REGEX, $rename_tree, $tree_list);
 		file_put_contents($tre_filename, $tree_list);
+		return true;
+	} else {
+		return false;
 	}
 
-	// cleanup
+	if ($DELETE_TEMP_FILES) {
+		foreach (glob($nex_filename_base .'.*') as $file) {
+			// echo('Deleting '.$file.PHP_EOL);
+			unlink($file);
+		}
+	}
 }
 
 ?>

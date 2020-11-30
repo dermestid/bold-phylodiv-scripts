@@ -14,7 +14,7 @@ require_once $DIR. 'tree_lengths.php';
 
 // Default arguments
 
-$SUBSAMPLE_NUMBER = 10;
+$SUBSAMPLE_NUMBER = 20;
 
 $LATITUDE_GRID_SIZE_DEG = 30;
 $LONGITUDE_GRID_SIZE_DEG = 30;
@@ -37,7 +37,8 @@ $PAUP_COMMANDS_END = $DIR. 'paup_commands_end.txt';
 
 $MINIMUM_SUBSAMPLE_NUMBER = 3; // need at least 3 taxa to build trees
 $MARKER = 'COI-5P';
-$USE_COORDS = true;
+
+$DELETE_TEMP_FILES = true;
 
 class field
 {
@@ -103,12 +104,22 @@ if ($lc = count($geo_divisions)) {
 	$geo_divisions = geo_divide($taxon);
 }
 
+print_r($geo_divisions);
+
 echo ('Creating and aligning subsamples of size '.$SUBSAMPLE_NUMBER.'...'.PHP_EOL);
 $aligned_subsamples = subsample_and_align($SUBSAMPLE_NUMBER, $taxon, $geo_divisions);
 
 $tree_file = $taxon . '.tre';
-make_trees($aligned_subsamples, $geo_divisions, $tree_file);
+if (!make_trees($aligned_subsamples, $geo_divisions, $tree_file)) {
+	exit('Tree construction failed.');
+}
 echo('Tree lengths for location samples: '.PHP_EOL);
 print_r(tree_lengths($tree_file));
+
+// clear up temp folder
+// $temp_dir_handle = opendir($TEMP_DIR);
+// $empty = (readdir($temp_dir_handle) === false);
+// closedir($temp_dir_handle);
+// if ($empty) { rmdir($TEMP_DIR); }
 
 ?>
