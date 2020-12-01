@@ -145,6 +145,7 @@ function get_sequences($taxon, $marker) {
     // make header
     $header = array(
         field::TAXON,
+        field::TOTAL_SEQUENCE_COUNT,
         field::DIVISION_SCHEME,
         field::LOCATION,
         field::COUNT,
@@ -158,6 +159,7 @@ function get_sequences($taxon, $marker) {
     {
         $entry = array(
             $taxon,
+            $sequence_count_total,
             division_scheme(),
             $loc,
             $count,
