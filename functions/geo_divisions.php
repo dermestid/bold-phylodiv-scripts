@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ .DIRECTORY_SEPARATOR. 'taxsets_data_file.php';
-require_once __DIR__ .DIRECTORY_SEPARATOR. 'division_scheme.php';
+require_once $FUNCTIONS_DIR. 'taxsets_data_file.php';
+require_once $FUNCTIONS_DIR. 'division_scheme.php';
 
 // Gets the names of stored location taxsets for a given taxon, where taxsets where formed using current settings.
 // Looks in taxsets_data_file($taxon) for entries with division_scheme = division_scheme(),

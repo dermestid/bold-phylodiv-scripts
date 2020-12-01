@@ -1,10 +1,10 @@
 <?php
 
-require_once __DIR__ .DIRECTORY_SEPARATOR. 'sequence_file.php';
-require_once __DIR__ .DIRECTORY_SEPARATOR. 'get_geo_division.php';
-require_once __DIR__ .DIRECTORY_SEPARATOR. 'taxsets_data_file.php';
-require_once __DIR__ .DIRECTORY_SEPARATOR. 'division_scheme.php';
-require_once __DIR__ .DIRECTORY_SEPARATOR. 'sequence_data_file.php';
+require_once $FUNCTIONS_DIR. 'sequence_file.php';
+require_once $FUNCTIONS_DIR. 'get_geo_division.php';
+require_once $FUNCTIONS_DIR. 'taxsets_data_file.php';
+require_once $FUNCTIONS_DIR. 'division_scheme.php';
+require_once $FUNCTIONS_DIR. 'sequence_data_file.php';
 
 // Look for downloaded sequences of $marker for $taxon. If no taxsets_data_file is found,
 // download the sequences from BOLD, and store subsets of them by location in a new taxsets_data_file.

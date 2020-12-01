@@ -1,8 +1,8 @@
 <?php
 
-require_once $DIR. 'subsample_taxsets.php';
-require_once $DIR. 'align.php';
-require_once $DIR. 'taxsets_data_file.php';
+require_once $FUNCTIONS_DIR. 'subsample_taxsets.php';
+require_once $FUNCTIONS_DIR. 'align.php';
+require_once $FUNCTIONS_DIR. 'taxsets_data_file.php';
 
 
 // Picks subsamples of $subsample_size from groups of sequences listed in given data file, aligns them,

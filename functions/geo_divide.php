@@ -1,9 +1,9 @@
 <?php
 
-require_once __DIR__.DIRECTORY_SEPARATOR. 'taxsets_data_file.php';
-require_once __DIR__.DIRECTORY_SEPARATOR. 'sequence_file.php';
-require_once __DIR__.DIRECTORY_SEPARATOR. 'sequence_data_file.php';
-require_once __DIR__.DIRECTORY_SEPARATOR. 'get_geo_division.php';
+require_once $FUNCTIONS_DIR. 'taxsets_data_file.php';
+require_once $FUNCTIONS_DIR. 'sequence_file.php';
+require_once $FUNCTIONS_DIR. 'sequence_data_file.php';
+require_once $FUNCTIONS_DIR. 'get_geo_division.php';
 
 // Sorts the downloaded sequences for $taxon into taxsets depending on current division_scheme(),
 // and adds them as entries to taxsets_data_file($taxon), which is assumed to already exist with some entries.
