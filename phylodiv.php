@@ -4,13 +4,15 @@
 $WINDOWS = (stripos(PHP_OS, 'WIN') === 0);
 $DIR = __DIR__ . DIRECTORY_SEPARATOR ;
 
-require_once $DIR. 'get_sequences.php';
-require_once $DIR. 'subsample_and_align.php';
-require_once $DIR. 'geo_divisions.php';
-require_once $DIR. 'division_scheme.php';
-require_once $DIR. 'geo_divide.php';
-require_once $DIR. 'make_trees.php';
-require_once $DIR. 'tree_lengths.php';
+$FUNCTIONS_DIR = $DIR .'functions'. DIRECTORY_SEPARATOR;
+
+require_once $FUNCTIONS_DIR. 'get_sequences.php';
+require_once $FUNCTIONS_DIR. 'subsample_and_align.php';
+require_once $FUNCTIONS_DIR. 'geo_divisions.php';
+require_once $FUNCTIONS_DIR. 'division_scheme.php';
+require_once $FUNCTIONS_DIR. 'geo_divide.php';
+require_once $FUNCTIONS_DIR. 'make_trees.php';
+require_once $FUNCTIONS_DIR. 'tree_lengths.php';
 
 // Default arguments
 
@@ -31,9 +33,9 @@ if ($WINDOWS) {
 $GEO_DIVISION_SCHEMES = array_flip(array('COORDS','COUNTRY'));
 $GEO_DIVISION_SCHEME = $GEO_DIVISION_SCHEMES['COORDS'];
 
-$PAUP_COMMANDS_SETUP = $DIR. 'paup_commands_setup.txt';
-$PAUP_COMMANDS_TREE = $DIR. 'paup_commands_tree.txt';
-$PAUP_COMMANDS_END = $DIR. 'paup_commands_end.txt';
+$PAUP_COMMANDS_SETUP = $FUNCTIONS_DIR. 'paup_commands_setup.txt';
+$PAUP_COMMANDS_TREE = $FUNCTIONS_DIR. 'paup_commands_tree.txt';
+$PAUP_COMMANDS_END = $FUNCTIONS_DIR. 'paup_commands_end.txt';
 
 $MINIMUM_SUBSAMPLE_NUMBER = 3; // need at least 3 taxa to build trees
 $MARKER = 'COI-5P';
