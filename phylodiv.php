@@ -41,6 +41,8 @@ $PAUP_COMMANDS_END = $FUNCTIONS_DIR. 'paup_commands_end.txt';
 $MINIMUM_SUBSAMPLE_NUMBER = 3; // need at least 3 taxa to build trees
 $MARKER = 'COI-5P';
 
+$REPLICATES = 10;
+
 $DELETE_TEMP_FILES = true;
 $PRINT_OUTPUT = false;
 $OUTPUT_RESULTS = true;
@@ -112,47 +114,56 @@ if ($lc = count($geo_divisions)) {
 	$geo_divisions = geo_divide($taxon);
 }
 
-echo ('Creating and aligning subsamples of size '.$SUBSAMPLE_NUMBER.'...'.PHP_EOL);
-// subsample_and_align takes $geo_divisions by reference and updates it to include only divisions successfully subsampled
-$aligned_subsamples = subsample_and_align($SUBSAMPLE_NUMBER, $taxon, $geo_divisions);
+if ($OUTPUT_RESULTS) {
+	if (!file_exists($OUTPUT_FILE)) {
+		$output_handle = fopen($OUTPUT_FILE, 'w');
+		$output_header = array(
+			'taxon',
+			'marker',
+			'total_sequence_count',
+			'location',
+			'subsample_size',
+			'subsample_tree_length'
+		);
+		fputcsv($output_handle, $output_header, $OUTPUT_FILE_DELIMITER);
+	} else {
+		$output_handle = fopen($OUTPUT_FILE, 'a');
+	}
 
-$tree_file = $taxon . '.tre';
-if (!make_trees($aligned_subsamples, $geo_divisions, $tree_file)) {
-	exit('Tree construction failed.');
-}
-$tree_lengths = tree_lengths($tree_file);
-if ($PRINT_OUTPUT) {
-	echo('Tree lengths for location samples: '.PHP_EOL);
-	print_r($tree_lengths);
-}
-
-// Output results to CSV
-if (!file_exists($OUTPUT_FILE)) {
-	$output_handle = fopen($OUTPUT_FILE, 'w');
-	$output_header = array(
-		'taxon',
-		'marker',
-		'total_sequence_count',
-		'location',
-		'subsample_size',
-		'subsample_tree_length'
-	);
-	fputcsv($output_handle, $output_header, $OUTPUT_FILE_DELIMITER);
-} else {
-	$output_handle = fopen($OUTPUT_FILE, 'a');
-}
-foreach ($tree_lengths as $loc => $length) {
-	$entry = array(
-		$taxon,
-		$MARKER,
-		total_sequence_count($taxon),
-		$loc,
-		$SUBSAMPLE_NUMBER,
-		$length
-	);
-	fputcsv($output_handle, $entry, $OUTPUT_FILE_DELIMITER);
+	if ($output_handle === false) {
+		exit ('Could not open output file '.$OUTPUT_FILE);
+	}
 }
 
+for ($i = 0; $i < $REPLICATES; $i++) {
+	echo ('Creating and aligning subsamples of size '.$SUBSAMPLE_NUMBER.'...'.PHP_EOL);
+	// subsample_and_align takes $geo_divisions by reference and updates it to include only divisions successfully subsampled
+	$aligned_subsamples = subsample_and_align($SUBSAMPLE_NUMBER, $taxon, $geo_divisions);
+
+	$tree_file = $taxon.'_'.$i. '.tre';
+	if (!make_trees($aligned_subsamples, $geo_divisions, $tree_file)) {
+		exit('Tree construction failed.');
+	}
+	$tree_lengths = tree_lengths($tree_file);
+	if ($PRINT_OUTPUT) {
+		echo('Tree lengths for location samples: '.PHP_EOL);
+		print_r($tree_lengths);
+	}
+
+	if ($OUTPUT_RESULTS) {
+		foreach ($tree_lengths as $loc => $length) {
+			$entry = array(
+				$taxon,
+				$MARKER,
+				total_sequence_count($taxon),
+				$loc,
+				$SUBSAMPLE_NUMBER,
+				$length
+			);
+			fputcsv($output_handle, $entry, $OUTPUT_FILE_DELIMITER);
+		}
+	}
+} // end for loop
 fclose($output_handle);
 
 // clear up temp folder
