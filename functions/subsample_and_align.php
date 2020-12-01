@@ -7,16 +7,19 @@ require_once $FUNCTIONS_DIR. 'taxsets_data_file.php';
 
 // Picks subsamples of $subsample_size from groups of sequences listed in given data file, aligns them,
 // and outputs a string in NEXUS format consisting of aligned sequences in separate DATA blocks.
-// Outputs a warning if any of the subsampled sequences are missing from the file they should be in,
-// or if any samples are of size 1 and so cannot be aligned.
-function subsample_and_align($subsample_size, $taxon, $taxset_locations) {
+// Outputs a warning if any of the subsampled sequences are missing from the file they should be in.
+// The parameter &$taxset_locations is updated to include only the locations which have been sampled.
+function subsample_and_align($subsample_size, $taxon, &$taxset_locations) {
     global $MINIMUM_SUBSAMPLE_NUMBER, $LOG_DIR;
     global $TAXSETS_DATA_DELIMITER, $TAXSET_DELIMITER;
     global $TEMP_DIR, $DELETE_TEMP_FILES;
 
     $CLUSTAL_LOG_SUFFIX = '_CLUSTALW.log';
 
-    if ($subsample_size < $MINIMUM_SUBSAMPLE_NUMBER) { return ''; }
+    if ($subsample_size < $MINIMUM_SUBSAMPLE_NUMBER) { 
+        $taxset_locations = array();
+        return ''; 
+    }
 
     // Get the columns from the data file
     $taxsets_data_handle = fopen(taxsets_data_file($taxon), 'r');
@@ -37,7 +40,9 @@ function subsample_and_align($subsample_size, $taxon, $taxset_locations) {
 
         if (!in_array($location, $taxset_locations)) { continue; }
 
-        if (count(explode($TAXSET_DELIMITER, $taxset_str)) < $MINIMUM_SUBSAMPLE_NUMBER) {
+        // Skip over taxsets smaller than the sample
+        if (count(explode($TAXSET_DELIMITER, $taxset_str)) < $subsample_size) {
+            array_splice($taxset_locations, array_search($location, $taxset_locations), 1);
             continue;
         }
 
