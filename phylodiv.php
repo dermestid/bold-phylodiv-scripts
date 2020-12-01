@@ -16,10 +16,10 @@ require_once $FUNCTIONS_DIR. 'tree_lengths.php';
 
 // Default arguments
 
-$SUBSAMPLE_NUMBER = 15;
+$SUBSAMPLE_NUMBER = 20;
 
-$LATITUDE_GRID_SIZE_DEG = 20;
-$LONGITUDE_GRID_SIZE_DEG = 20;
+$LATITUDE_GRID_SIZE_DEG = 30;
+$LONGITUDE_GRID_SIZE_DEG = 30;
 
 $CLUSTAL_PATH = '/usr/local/bin/clustalw2';
 $PAUP_PATH = '/usr/local/bin/paup';
