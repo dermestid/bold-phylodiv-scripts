@@ -61,7 +61,6 @@ function make_trees($data, $tree_names, $tre_filename) {
 			return $decl; };
 		$tree_list = preg_replace_callback($TREE_DECLARATION_REGEX, $rename_tree, $tree_list);
 		file_put_contents($tre_filename, $tree_list);
-		return true;
 	} else {
 		return false;
 	}
@@ -72,6 +71,7 @@ function make_trees($data, $tree_names, $tre_filename) {
 			unlink($file);
 		}
 	}
+	return true;
 }
 
 ?>

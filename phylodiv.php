@@ -16,10 +16,10 @@ require_once $FUNCTIONS_DIR. 'tree_lengths.php';
 
 // Default arguments
 
-$SUBSAMPLE_NUMBER = 20;
+$SUBSAMPLE_NUMBER = 15;
 
-$LATITUDE_GRID_SIZE_DEG = 30;
-$LONGITUDE_GRID_SIZE_DEG = 30;
+$LATITUDE_GRID_SIZE_DEG = 20;
+$LONGITUDE_GRID_SIZE_DEG = 20;
 
 $CLUSTAL_PATH = '/usr/local/bin/clustalw2';
 $PAUP_PATH = '/usr/local/bin/paup';
@@ -106,8 +106,6 @@ if ($lc = count($geo_divisions)) {
 	$geo_divisions = geo_divide($taxon);
 }
 
-print_r($geo_divisions);
-
 echo ('Creating and aligning subsamples of size '.$SUBSAMPLE_NUMBER.'...'.PHP_EOL);
 $aligned_subsamples = subsample_and_align($SUBSAMPLE_NUMBER, $taxon, $geo_divisions);
 
@@ -119,9 +117,11 @@ echo('Tree lengths for location samples: '.PHP_EOL);
 print_r(tree_lengths($tree_file));
 
 // clear up temp folder
-// $temp_dir_handle = opendir($TEMP_DIR);
-// $empty = (readdir($temp_dir_handle) === false);
-// closedir($temp_dir_handle);
-// if ($empty) { rmdir($TEMP_DIR); }
+$temp_dir_handle = opendir($TEMP_DIR);
+do {
+	$temp_contents = readdir($temp_dir_handle);
+} while ($temp_contents == '.' || $temp_contents == '..');
+closedir($temp_dir_handle);
+if ($temp_contents === false) { rmdir($TEMP_DIR); }
 
 ?>
