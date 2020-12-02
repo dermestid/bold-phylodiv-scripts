@@ -23,26 +23,26 @@ function subsample_and_align($subsample_size, $taxon, &$taxset_locations) {
 
     // Get the columns from the data file
     $taxsets_data_handle = fopen(taxsets_data_file($taxon), 'r');
-    $col = array_flip(fgetcsv($taxsets_data_handle, 0, $TAXSETS_DATA_DELIMITER));
-
+    $header = fgetcsv($taxsets_data_handle, 0, $TAXSETS_DATA_DELIMITER);
+    $c_file = array_search(TAXSETS::FILE, $header);
+    $c_taxset = array_search(TAXSETS::TAXSET, $header);
+    $c_location = array_search(TAXSETS::LOCATION, $header);
+    
     $nexus_string = '#NEXUS' . PHP_EOL;
     $file_offset = strlen($nexus_string);
-
-    $taxon_number = 0;
-    $taxset_names = array();
 
     // Go through all entries
     while ($entry = fgetcsv($taxsets_data_handle, 0, $TAXSETS_DATA_DELIMITER)) {
 
-        $sequence_file = $entry[$col[field::FILE]];
-        $taxset_str = $entry[$col[field::TAXSET]];
-        $location = $entry[$col[field::LOCATION]];
+        $sequence_file = $entry[$c_file];
+        $taxset_str = $entry[$c_taxset];
+        $location_key = $entry[$c_location];
 
-        if (!in_array($location, $taxset_locations)) { continue; }
-
+        if (!array_key_exists($location_key, $taxset_locations)) { continue; }
         // Skip over taxsets smaller than the sample
         if (count(explode($TAXSET_DELIMITER, $taxset_str)) < $subsample_size) {
-            array_splice($taxset_locations, array_search($location, $taxset_locations), 1);
+//          array_splice($taxset_locations, array_search($location_key, $taxset_locations), 1);
+            unset($taxset_locations[$location_key]);
             continue;
         }
 

@@ -5,26 +5,26 @@ require_once $FUNCTIONS_DIR. 'sequence_file.php';
 require_once $FUNCTIONS_DIR. 'sequence_data_file.php';
 require_once $FUNCTIONS_DIR. 'get_geo_division.php';
 
-// Sorts the downloaded sequences for $taxon into taxsets depending on current division_scheme(),
+// Sorts the downloaded sequences for $taxon into taxsets depending on current $DIVISION_SCHEME,
 // and adds them as entries to taxsets_data_file($taxon), which is assumed to already exist with some entries.
 // Doesn't do a check if they're already in there, and will duplicate entries if they are.
 // Returns an array of the new geographical division names.
 function geo_divide($taxon) {
     global $SEQUENCE_DATA_DELIMITER, $TAXSETS_DATA_DELIMITER, $TAXSET_DELIMITER;
+    global $DIVISION_SCHEME;
 
     if(!(file_exists($data_file = taxsets_data_file($taxon)))) { 
-        exit('Error: non-existent ' .$data_file. ' requested by geo_divide(' .$taxon. ')');
+        exit("Error: non-existent {$data_file} requested by geo_divide({$taxon})");
     }
     if(!(file_exists($sequence_file = sequence_file($taxon)))) {
-        exit('Error: non-existent ' .$sequence_file. ' requested by geo_divide(' .$taxon. ')');
+        exit("Error: non-existent {$sequence_file} requested by geo_divide({$taxon})");
     }
     if(!(file_exists($sequence_data_file = sequence_data_file($taxon)))) {
-        exit('Error: non-existent ' .$sequence_data_file. ' requested by geo_divide(' .$taxon. ')');
+        exit("Error: non-existent {$sequence_data_file} requested by geo_divide({$taxon})");
     }
 
     $sequence_index = 0;
-    $sequence_counts = array();
-    $taxsets = array();
+    $sequence_sets = array();
 
     $sequences_handle = fopen($sequence_file, 'r');
     $sequence_data_handle = fopen($sequence_data_file, 'r');
@@ -62,16 +62,30 @@ function geo_divide($taxon) {
         
         if (!$sequence_data_entry) { continue; }
 
-        $loc = get_geo_division($sequence_data_entry, $sequence_data_header);
-        if ($loc) {
-            // Keep location-specific record of sequences stored
-            if(!isset($sequence_counts[$loc])) { $sequence_counts[$loc] = 0; }
-            $sequence_counts[$loc]++;
+        // Make an associative entry
+        $sequence_data_entry = array_combine($sequence_data_header, $sequence_data_entry);
 
-            // Store the index in a location-specific taxset
-            if(!isset($taxsets[$loc])) { $taxsets[$loc] = ''; }
-            if ($sequence_counts[$loc] > 1) { $taxsets[$loc] .= $TAXSET_DELIMITER; }
-            $taxsets[$loc] .= $sequence_index;
+        try{
+            // throws if entry doesn't have the right fields for $DIVISION_SCHEME
+            $loc = Location::read($DIVISION_SCHEME, $sequence_data_entry);
+        } catch (LocationException $e) {
+            $loc = false;
+        }
+        if ($loc !== false) {
+            if(!isset($sequence_sets[$loc->key])) {
+                $sequence_sets[$loc->key] = array(
+                    'sequence_count' => 0,
+                    'taxset' => '',
+                    'location' => $loc
+                ); 
+            }
+            $sequence_sets[$loc->key]['sequence_count']++;
+
+            // Add the index to the taxset
+            if ($sequence_sets[$loc->key]['sequence_count'] > 1) {
+                $sequence_sets[$loc->key]['taxset'] .= $TAXSET_DELIMITER; 
+            }
+            $sequence_sets[$loc->key]['taxset'] .= $sequence_index;
         }
 
         // Update the user as this may take a while
@@ -91,40 +105,60 @@ function geo_divide($taxon) {
     // Get header
     $taxsets_handle = fopen($data_file, 'r+');
     $taxsets_header = fgetcsv($taxsets_handle, 0, $TAXSETS_DATA_DELIMITER);
+    $write_header = false;
+    if (!$taxsets_header || $taxsets_header[0] == '') {
+        // No header: make a new one
+        $taxsets_header = TAXSETS::FIELDS;
+        $write_header = true;
+    }
 
-    // Jump to end
-    fseek($taxsets_handle, 0, SEEK_END);
+    // Add any fields to the header which aren't yet present
+    foreach ($DIVISION_SCHEME->saved_params as $field) {
+        $f_i = array_search($field, $taxsets_header, true);
+        if ($f_i === false) {
+            array_push($taxsets_header, $field);
+            $write_header = true;
+        }
+    }
+    
+    // Update the header if needed
+    if ($write_header) {
+        $remainder = stream_get_contents($taxsets_handle);
+        rewind($taxsets_handle);
+        ftruncate($taxsets_handle);
+        fputcsv($taxsets_handle, $taxsets_header, $TAXSETS_DATA_DELIMITER);
+        fwrite($taxsets_handle, $remainder);
+    } else {
+        // Jump to end
+        fseek($taxsets_handle, 0, SEEK_END);
+    }
+
     
     // Add each new taxset
-    foreach ($sequence_counts as $loc => $count)
+    foreach ($sequence_sets as $loc_key => $data)
     {
-        $entry = array(
+        $entry = array_combine(TAXSETS::FIELDS, array(
             $taxon,
-            division_scheme(),
-            $loc,
-            $count,
+            0, // TODO PLACEHOLDER
+            $DIVISION_SCHEME->key,
+            $loc_key,
+            $data['sequence_count'],
             $sequence_file,
-            $taxsets[$loc]
-        );
+            $data['taxset']
+        ));
+        $entry = array_merge($entry, $data['location']->data);
 
         // Make sure fields are in the expected order
-        $entry_fields = array_flip(array(
-            field::TAXON,
-            field::DIVISION_SCHEME,
-            field::LOCATION,
-            field::COUNT,
-            field::FILE,
-            field::TAXSET
-        ));
-        $entry_shuffle = function ($col) use ($entry, $entry_fields) {
-            return $entry[$entry_fields[$col]]; };
+        $entry_shuffle = function ($col) use ($entry) {
+            return $entry[$col]; };
         $entry = array_map($entry_shuffle, $taxsets_header);
 
         fputcsv($taxsets_handle, $entry, $TAXSETS_DATA_DELIMITER);
     }
     fclose($taxsets_handle);
 
-    return array_keys($taxsets);
+    $get_location = function ($seq_data) { return $seq_data['location']; };
+    return array_map($get_location, $sequence_sets);
 }
 
 ?>
