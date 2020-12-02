@@ -42,14 +42,14 @@ function subsample_taxsets($subsample_size, $taxset_str, $taxset_delimiter, $seq
 
 		if(in_array($i, $subsample)) {
             fwrite($subsamples_handle, $line);
-            if ($header) { $subsampled_count++; }
 		}
 	}
 	fclose($subsamples_handle);
 	fclose($sequences_handle);
 
-    if ($subsampled_count < $subsample_size) {
+    if ($i < $subsample_size) {
         // something was missing!
+        exit('missing sequences in sample');
         return array('','','');
     }
 

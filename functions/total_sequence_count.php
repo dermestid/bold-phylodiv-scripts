@@ -12,10 +12,10 @@ function total_sequence_count($taxon) {
     $header = fgetcsv($data_handle, 0, $TAXSETS_DATA_DELIMITER);
     $fields = array_flip($header);
     while($entry = fgetcsv($data_handle, 0, $TAXSETS_DATA_DELIMITER)) {
-        $entry_taxon = $entry[$fields[field::TAXON]];
+        $entry_taxon = $entry[$fields[TAXSETS::TAXON]];
         if ($entry_taxon != $taxon) { continue; }
 
-        $entry_count = $entry[$fields[field::TOTAL_SEQUENCE_COUNT]];
+        $entry_count = $entry[$fields[TAXSETS::TOTAL_SEQUENCE_COUNT]];
         if ($entry_count == '') { return 0; }
 
         return intval($entry_count);

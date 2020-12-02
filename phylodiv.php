@@ -31,9 +31,6 @@ if ($WINDOWS) {
 
 // Constants
 
-$GEO_DIVISION_SCHEMES = array_flip(array('COORDS','COUNTRY'));
-$GEO_DIVISION_SCHEME = $GEO_DIVISION_SCHEMES['COORDS'];
-
 $PAUP_COMMANDS_SETUP = $FUNCTIONS_DIR. 'paup_commands_setup.txt';
 $PAUP_COMMANDS_TREE = $FUNCTIONS_DIR. 'paup_commands_tree.txt';
 $PAUP_COMMANDS_END = $FUNCTIONS_DIR. 'paup_commands_end.txt';
@@ -41,7 +38,7 @@ $PAUP_COMMANDS_END = $FUNCTIONS_DIR. 'paup_commands_end.txt';
 $MINIMUM_SUBSAMPLE_NUMBER = 3; // need at least 3 taxa to build trees
 $MARKER = 'COI-5P';
 
-$REPLICATES = 10;
+$REPLICATES = 5;
 
 $DELETE_TEMP_FILES = true;
 $PRINT_OUTPUT = false;
@@ -49,7 +46,8 @@ $OUTPUT_RESULTS = true;
 $OUTPUT_FILE = 'bold_phylodiv_results.csv';
 $OUTPUT_FILE_DELIMITER = ',';
 
-class field
+// Class to store names of fields in taxsets_data_file
+class TAXSETS
 {
 	const TAXON = 'taxon';
 	const TOTAL_SEQUENCE_COUNT = 'total_sequence_count';
@@ -58,10 +56,80 @@ class field
 	const COUNT = 'count';
 	const FILE = 'file';
 	const TAXSET = 'taxset';
+	const FIELDS = array(
+		self::TAXON, self::TOTAL_SEQUENCE_COUNT, self::DIVISION_SCHEME, self::LOCATION, 
+		self::COUNT, self::FILE, self::TAXSET
+	);
+}
+
+class Coord_grid
+{
+	const SIZE_LAT = 'SIZE_LAT';
+	const SIZE_LON = 'SIZE_LON';
+	public array $params = array();
+}
+$COORD_GRID = new Coord_grid();
+$COORD_GRID->params = array(
+	Coord_grid::SIZE_LAT => $LATITUDE_GRID_SIZE_DEG,
+	Coord_grid::SIZE_LON => $LONGITUDE_GRID_SIZE_DEG
+);
+
+// Class to store names of the fields we need in data obtained from BOLD
+// Make sure to check the output from BOLD if there are any format changes; 
+// otherwise, there will be fields missing from the saved data.
+class BOLD
+{
+	const MARKER_CODE = 'markercode';
+	const PROCESS_ID = 'processid';
+	const SPECIES_NAME = 'species_name';
+	const GENUS_NAME = 'genus_name';
+	const NUCLEOTIDES = 'nucleotides';
+	const INSTITUTION = 'institution_storing';
+	const COLLECTION_EVENT_ID = 'collection_event_id';
+	const COLLECION_DATE_START = 'collectiondate_start';
+	const COLLECTION_DATE_END = 'collectiondate_end';
+	const COLLECTION_TIME = 'collectiontime';
+	const COLLECTION_NOTE = 'collection_note';
+	const SITE_CODE = 'site_code';
+	const SAMPLING_PROTOCOL = 'sampling_protocol';
+	const HABITAT = 'habitat';
+	const NOTES = 'notes';
+	const LATITUDE = 'lat';
+	const LONGITUDE = 'lon';
+	const COORD_SOURCE = 'coord_source';
+	const COORD_ACCURACY = 'coord_accuracy';
+	const ELEVATION = 'elev';
+	const DEPTH = 'depth';
+	const ELEVATION_ACCURACY = 'elev_accuracy';
+	const DEPTH_ACCURACY = 'depth_accuracy';
+	const COUNTRY = 'country';
+	const PROVINCE_STATE = 'province_state';
+	const REGION = 'region';
+	const SECTOR = 'sector';
+	const EXACT_SITE = 'exactsite';
+	const SEQUENCE_DATA_FIELDS = array(
+		self::MARKER_CODE, self::PROCESS_ID, self::SPECIES_NAME, self::GENUS_NAME,
+		self::INSTITUTION, self::COLLECTION_EVENT_ID, self::COLLECION_DATE_START, 
+		self::COLLECTION_DATE_END, self::COLLECTION_TIME, self::COLLECTION_NOTE, 
+		self::SITE_CODE, self::SAMPLING_PROTOCOL, self::HABITAT, self::NOTES, 
+		self::LATITUDE, self::LONGITUDE, self::COORD_SOURCE, self::COORD_ACCURACY, 
+		self::ELEVATION, self::DEPTH, self::ELEVATION_ACCURACY, self::DEPTH_ACCURACY, 
+		self::COUNTRY, self::PROVINCE_STATE, self::REGION, self::SECTOR, self::EXACT_SITE
+	);
+	const LOCATION_FIELDS = array(
+		self::INSTITUTION, self::COLLECTION_EVENT_ID, self::COLLECION_DATE_START, 
+		self::COLLECTION_DATE_END, self::COLLECTION_TIME, self::COLLECTION_NOTE, 
+		self::SITE_CODE, self::SAMPLING_PROTOCOL, self::HABITAT, self::NOTES, 
+		self::LATITUDE, self::LONGITUDE, self::COORD_SOURCE, self::COORD_ACCURACY, 
+		self::ELEVATION, self::DEPTH, self::ELEVATION_ACCURACY, self::DEPTH_ACCURACY, 
+		self::COUNTRY, self::PROVINCE_STATE, self::REGION, self::SECTOR, self::EXACT_SITE
+	);
 }
 $TAXSETS_DATA_DELIMITER = ',';
 $TAXSET_DELIMITER = ' ';
 $SEQUENCE_DATA_DELIMITER = ',';
+
+$DIVISION_SCHEME = new Division_scheme(Division_scheme::COORDS, array(BOLD::LATITUDE, BOLD::LONGITUDE));
 
 $TEMP_DIR = getcwd() .DIRECTORY_SEPARATOR. 'temp' .DIRECTORY_SEPARATOR; 
 if (!is_dir($TEMP_DIR)) { mkdir($TEMP_DIR); }
@@ -95,36 +163,38 @@ while($i) {
 
 [$download_attempted, $taxsets_data_file] = get_sequences($taxon, $MARKER);
 if (!$taxsets_data_file) {
-	exit ('No sequences for '.$taxon.' found locally or on BOLD.');
+	exit("No sequences for {$taxon} found locally or on BOLD.");
 }
 
 if (!$download_attempted) {
-	echo ('Found saved data file for ' . $taxon . '.'.PHP_EOL);
+	echo("Found saved data file for {$taxon}.".PHP_EOL);
 }
 
 $geo_divisions = geo_divisions($taxon);
 if ($lc = count($geo_divisions)) {
 	if ($download_attempted) {
-		echo ('Sorted downloaded sequences into '.$lc.' locations according to '. division_scheme().'.' .PHP_EOL);
+		echo("Sorted downloaded sequences into {$lc} locations according to {$DIVISION_SCHEME->key}.".PHP_EOL);
 	} else {
-		echo ('Found sorting of sequences into '.$lc.' locations according to '. division_scheme().'.' .PHP_EOL);
+		echo("Found sorting of sequences into {$lc} locations according to {$DIVISION_SCHEME->key}.".PHP_EOL);
 	}
 } else {
-	echo ('Sorting sequences into location according to ' . division_scheme() . '...' . PHP_EOL);
+	echo("Sorting sequences into location according to {$DIVISION_SCHEME->key}...".PHP_EOL);
 	$geo_divisions = geo_divide($taxon);
 }
 
 if ($OUTPUT_RESULTS) {
+	$output_header = array(
+		'taxon',
+		'marker',
+		'total_sequence_count',
+		'location_key',
+		'subsample_size',
+		'subsample_tree_length'
+	);
+	$output_header = array_merge($output_header, $DIVISION_SCHEME->saved_params);
+	$output_header_size = count($output_header);
 	if (!file_exists($OUTPUT_FILE)) {
 		$output_handle = fopen($OUTPUT_FILE, 'w');
-		$output_header = array(
-			'taxon',
-			'marker',
-			'total_sequence_count',
-			'location',
-			'subsample_size',
-			'subsample_tree_length'
-		);
 		fputcsv($output_handle, $output_header, $OUTPUT_FILE_DELIMITER);
 	} else {
 		$output_handle = fopen($OUTPUT_FILE, 'a');
@@ -136,12 +206,12 @@ if ($OUTPUT_RESULTS) {
 }
 
 for ($i = 0; $i < $REPLICATES; $i++) {
-	echo ('Creating and aligning subsamples of size '.$SUBSAMPLE_NUMBER.'...'.PHP_EOL);
+	echo ("Creating and aligning subsamples of size {$SUBSAMPLE_NUMBER}...".PHP_EOL);
 	// subsample_and_align takes $geo_divisions by reference and updates it to include only divisions successfully subsampled
 	$aligned_subsamples = subsample_and_align($SUBSAMPLE_NUMBER, $taxon, $geo_divisions);
 
 	$tree_file = $taxon.'_'.$i. '.tre';
-	if (!make_trees($aligned_subsamples, $geo_divisions, $tree_file)) {
+	if (!make_trees($aligned_subsamples, array_keys($geo_divisions), $tree_file)) {
 		exit('Tree construction failed.');
 	}
 	$tree_lengths = tree_lengths($tree_file);
@@ -151,15 +221,24 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 	}
 
 	if ($OUTPUT_RESULTS) {
-		foreach ($tree_lengths as $loc => $length) {
+		$location_cols = array();
+		foreach ($DIVISION_SCHEME->saved_params as $field) {
+			$location_cols[$field] = array_search($field, $output_header);
+		}
+		foreach ($geo_divisions as $key => $loc) {
 			$entry = array(
 				$taxon,
 				$MARKER,
 				total_sequence_count($taxon),
-				$loc,
+				$key,
 				$SUBSAMPLE_NUMBER,
-				$length
+				$tree_lengths[$key]
 			);
+			$entry = array_pad($entry, $output_header_size, '');
+			// Add in the relevant location data
+			foreach ($loc->data as $field => $value) {
+				$entry[$location_cols[$field]] = $value;
+			}
 			fputcsv($output_handle, $entry, $OUTPUT_FILE_DELIMITER);
 		}
 	}

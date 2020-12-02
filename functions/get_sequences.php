@@ -14,39 +14,11 @@ require_once $FUNCTIONS_DIR. 'sequence_data_file.php';
 function get_sequences($taxon, $marker) {
     global $SEQUENCE_DATA_DELIMITER;
     global $TAXSETS_DATA_DELIMITER, $TAXSET_DELIMITER;
+    global $DIVISION_SCHEME;
 
     $BOLD_URL_PREFIX = 'http://www.boldsystems.org/index.php/API_Public/combined';
     $SEQUENCE_SOURCE_FORMAT = 'tsv';
     $SOURCE_DELIMITER = "\t";
-
-    // this array defines the columns which we want to keep locally as data about a sequence's location etc.
-    // Make sure to check the output from BOLD if there are any format changes; 
-    // otherwise, there will be fields missing from the saved data.
-    $KEEP_SOURCE_FIELDS = array(
-        'institution_storing',
-        'collection_event_id',
-        'collectiondate_start',
-        'collectiondate_end',
-        'collectiontime',
-        'collection_note',
-        'site_code',
-        'sampling_protocol',
-        'habitat',
-        'notes',
-        'lat',
-        'lon',
-        'coord_source',
-        'coord_accuracy',
-        'elev',
-        'depth',
-        'elev_accuracy',
-        'depth_accuracy',
-        'country',
-        'province_state',
-        'region',
-        'sector',
-        'exactsite'
-    );
 
     $taxsets_data_file = taxsets_data_file($taxon);
     if (file_exists($taxsets_data_file)) {
@@ -68,72 +40,92 @@ function get_sequences($taxon, $marker) {
 
     $sequence_file = sequence_file($taxon);
     $sequence_cache_handle = fopen($sequence_file, 'w');
-    $sequence_counts = array();
-    $sequence_count_total = 0;
-    $taxsets = array();
+    $sequence_index = 0;
+    $sequence_sets = array();
+    
 
     $sequence_data_file = sequence_data_file($taxon);
     $sequence_data_handle = fopen($sequence_data_file, 'w');
-    $sequence_data_header = $KEEP_SOURCE_FIELDS;
+    $sequence_data_header = BOLD::SEQUENCE_DATA_FIELDS;
     array_unshift($sequence_data_header, 'sequence_index', 'file');
     fputcsv($sequence_data_handle, $sequence_data_header, $SEQUENCE_DATA_DELIMITER);
 
     // Step through stream line by line
     while ($entry = fgetcsv($source_handle, 0, $SOURCE_DELIMITER))
     {
+        
+        // make associative entry
+        $entry = array_combine($header, $entry);
+
         // Check marker is the one we want to use
-        if ($entry[$fields['markercode']] != $marker) { continue; }
+        if ($entry[BOLD::MARKER_CODE] != $marker) { continue; }
 
         // Make sequence header
-        if (($id = $entry[$fields['processid']]) == '') { continue; }
+        if (($id = $entry[BOLD::PROCESS_ID]) == '') { continue; }
+        // Replace bad chars in id
         $id = preg_replace('/-/', '_', $id);
-        if (($species = $entry[$fields['species_name']]) != '') {
+        if (($species = $entry[BOLD::SPECIES_NAME]) != '') {
+            // replace bad chars in species name; use it and id
             $sequence_header = preg_replace('~[-/ ]~', '_', $species) . '|' . $id;
-        } else if (($genus = $entry[$fields['genus_name']]) != '') {
+        } else if (($genus = $entry[BOLD::GENUS_NAME]) != '') {
+            // use genus name and id
             $sequence_header = $genus . '_sp|' . $id;
         } else {
+            // use id
             $sequence_header = $id;
         }
         $sequence_header = '>' . $sequence_header;
 
         // Get sequence and write to file after header
-        if (($seq = $entry[$fields['nucleotides']]) == '') { continue; }
+        if (($seq = $entry[BOLD::NUCLEOTIDES]) == '') { continue; }
         fwrite($sequence_cache_handle, $sequence_header . PHP_EOL);
         fwrite($sequence_cache_handle, $seq . PHP_EOL);
 
-        // Get the location of the sequence according to current geographical division scheme
-        $loc = get_geo_division($entry, $header);
-        if ($loc) { 
+        try{
+            // throws if entry doesn't have the right fields for $DIVISION_SCHEME
+            $loc = Location::read($DIVISION_SCHEME, $entry);
+        } catch (LocationException $e) {
+            $loc = false;
+        }
+        if ($loc !== false) {
             // Keep location-specific record of sequences stored
-            if(!isset($sequence_counts[$loc])) { $sequence_counts[$loc] = 0; }
-            $sequence_counts[$loc]++;
+            if(!isset($sequence_sets[$loc->key])) { 
+                $sequence_sets[$loc->key] = array(
+                    'sequence_count' => 0,
+                    'taxset' => '',
+                    'location' => $loc
+                );
+            }
+            $sequence_sets[$loc->key]['sequence_count']++;
 
             // Store the index in a location-specific taxset
-            if(!isset($taxsets[$loc])) { $taxsets[$loc] = ''; }
-            if ($sequence_counts[$loc] > 1) { $taxsets[$loc] .= $TAXSET_DELIMITER; }
-            $taxsets[$loc] .= $sequence_count_total;
+            if ($sequence_sets[$loc->key]['sequence_count'] > 1) { 
+                $sequence_sets[$loc->key]['taxset'] .= $TAXSET_DELIMITER; 
+            }
+            $sequence_sets[$loc->key]['taxset'] .= $sequence_index;
         }
 
         // update the user for big downloads
-        $sequence_count_total++;
-        if ($sequence_count_total % 250 == 0) {
-            echo("Saved " . $sequence_count_total . ' sequences...' . PHP_EOL);
+        $sequence_index++;
+        if ($sequence_index % 250 == 0) {
+            echo("Saved {$sequence_index} sequences...". PHP_EOL);
         }
 
         // Store the full location etc metadata for the sequence locally, 
         // so we can use a different geographical division scheme in future.
-        $entry_subset = function ($col) use ($fields, $entry) {
-            if (key_exists($col, $fields)) { return $entry[$fields[$col]]; }
-            else { return ''; } };
-        $sequence_data = array_map($entry_subset, $KEEP_SOURCE_FIELDS);
-        array_unshift($sequence_data, $sequence_count_total, $sequence_file);
+        $keep_fields = array();
+        foreach (BOLD::SEQUENCE_DATA_FIELDS as $field) {
+            array_push($keep_fields, $entry[$field]);
+        }
+        $sequence_data = $keep_fields;
+        array_unshift($sequence_data, $sequence_index, $sequence_file);
         fputcsv($sequence_data_handle, $sequence_data, $SEQUENCE_DATA_DELIMITER);
     } // end while loop
     fclose($source_handle);
     fclose($sequence_cache_handle);
     fclose($sequence_data_handle);
 
-    if ($sequence_count_total == 0) {
+    if ($sequence_index == 0) {
         echo('No sequences were downloaded. Bad taxon name?' . PHP_EOL);
         return array(true, false);
     }
@@ -144,28 +136,30 @@ function get_sequences($taxon, $marker) {
 
     // make header
     $header = array(
-        field::TAXON,
-        field::TOTAL_SEQUENCE_COUNT,
-        field::DIVISION_SCHEME,
-        field::LOCATION,
-        field::COUNT,
-        field::FILE,
-        field::TAXSET
+        TAXSETS::TAXON,
+        TAXSETS::DIVISION_SCHEME,
+        TAXSETS::LOCATION,
+        TAXSETS::COUNT,
+        TAXSETS::FILE,
+        TAXSETS::TOTAL_SEQUENCE_COUNT,
+        TAXSETS::TAXSET
     );
+    $header = array_merge($header, $DIVISION_SCHEME->saved_params);
     fputcsv($taxsets_handle, $header, $TAXSETS_DATA_DELIMITER);
 
     // Store entries
-    foreach ($sequence_counts as $loc => $count)
+    foreach ($sequence_sets as $loc_key => $data)
     {
         $entry = array(
             $taxon,
-            $sequence_count_total,
-            division_scheme(),
-            $loc,
-            $count,
+            $DIVISION_SCHEME->key,
+            $loc_key,
+            $data['sequence_count'],
             $sequence_file,
-            $taxsets[$loc]
+            $sequence_index,
+            $data['taxset']
         );
+        $entry = array_merge($entry, $data['location']->data);
         fputcsv($taxsets_handle, $entry, $TAXSETS_DATA_DELIMITER);
     }
     fclose($taxsets_handle);
