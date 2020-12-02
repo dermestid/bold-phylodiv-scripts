@@ -68,11 +68,6 @@ class Coord_grid
 	const SIZE_LON = 'SIZE_LON';
 	public array $params = array();
 }
-$COORD_GRID = new Coord_grid();
-$COORD_GRID->params = array(
-	Coord_grid::SIZE_LAT => $LATITUDE_GRID_SIZE_DEG,
-	Coord_grid::SIZE_LON => $LONGITUDE_GRID_SIZE_DEG
-);
 
 // Class to store names of the fields we need in data obtained from BOLD
 // Make sure to check the output from BOLD if there are any format changes; 
@@ -129,8 +124,6 @@ $TAXSETS_DATA_DELIMITER = ',';
 $TAXSET_DELIMITER = ' ';
 $SEQUENCE_DATA_DELIMITER = ',';
 
-$DIVISION_SCHEME = new Division_scheme(Division_scheme::COORDS, array(BOLD::LATITUDE, BOLD::LONGITUDE));
-
 $TEMP_DIR = getcwd() .DIRECTORY_SEPARATOR. 'temp' .DIRECTORY_SEPARATOR; 
 if (!is_dir($TEMP_DIR)) { mkdir($TEMP_DIR); }
 $LOG_DIR = getcwd() .DIRECTORY_SEPARATOR. 'logs' .DIRECTORY_SEPARATOR;
@@ -158,6 +151,13 @@ while($i) {
 	// echo('set '. $args[$i] . ' to ' . $argv[$i] . PHP_EOL);
 	$i--;
 }
+
+$COORD_GRID = new Coord_grid();
+$COORD_GRID->params = array(
+	Coord_grid::SIZE_LAT => $LATITUDE_GRID_SIZE_DEG,
+	Coord_grid::SIZE_LON => $LONGITUDE_GRID_SIZE_DEG
+);
+$DIVISION_SCHEME = new Division_scheme(Division_scheme::COORDS, array(BOLD::LATITUDE, BOLD::LONGITUDE));
 
 // Get sequences, subsample, align, and build trees
 
