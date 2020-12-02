@@ -4,6 +4,7 @@ require_once $FUNCTIONS_DIR. 'taxsets_data_file.php';
 require_once $FUNCTIONS_DIR. 'sequence_file.php';
 require_once $FUNCTIONS_DIR. 'sequence_data_file.php';
 require_once $FUNCTIONS_DIR. 'get_geo_division.php';
+require_once $FUNCTIONS_DIR. 'total_sequence_count.php';
 
 // Sorts the downloaded sequences for $taxon into taxsets depending on current $DIVISION_SCHEME,
 // and adds them as entries to taxsets_data_file($taxon), which is assumed to already exist with some entries.
@@ -102,6 +103,8 @@ function geo_divide($taxon) {
 
     // Save data in a csv
 
+    $total_sequence_count = total_sequence_count($taxon);
+
     // Get header
     $taxsets_handle = fopen($data_file, 'r+');
     $taxsets_header = fgetcsv($taxsets_handle, 0, $TAXSETS_DATA_DELIMITER);
@@ -139,7 +142,7 @@ function geo_divide($taxon) {
     {
         $entry = array_combine(TAXSETS::FIELDS, array(
             $taxon,
-            0, // TODO PLACEHOLDER
+            $total_sequence_count,
             $DIVISION_SCHEME->key,
             $loc_key,
             $data['sequence_count'],
