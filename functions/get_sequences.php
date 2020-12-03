@@ -53,8 +53,14 @@ function get_sequences($taxon, $marker) {
     // Step through stream line by line
     while ($entry = fgetcsv($source_handle, 0, $SOURCE_DELIMITER))
     {
-        
+        // Check for broken entry
+        $entry_size = count($entry);
+        if ($entry_size > $header_size) { 
+            // echo("Bad entry with size {$entry_size}".php_EOL);
+            continue;
+        }
         // make associative entry
+        $entry = array_pad($entry, $header_size, '');
         $entry = array_combine($header, $entry);
 
         // Check marker is the one we want to use
