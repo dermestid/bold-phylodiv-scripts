@@ -187,6 +187,7 @@ if ($OUTPUT_RESULTS) {
 		'taxon',
 		'marker',
 		'total_sequence_count',
+		'division_scheme',
 		'location_key',
 		'subsample_size',
 		'subsample_tree_length'
@@ -230,6 +231,7 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 				$taxon,
 				$MARKER,
 				total_sequence_count($taxon),
+				$DIVISION_SCHEME->key,
 				$key,
 				$SUBSAMPLE_NUMBER,
 				$tree_lengths[$key]
