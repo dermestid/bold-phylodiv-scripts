@@ -8,7 +8,7 @@ $FUNCTIONS_DIR = $DIR .'functions'. DIRECTORY_SEPARATOR;
 
 require_once $FUNCTIONS_DIR. 'get_sequences.php';
 require_once $FUNCTIONS_DIR. 'subsample_and_align.php';
-require_once $FUNCTIONS_DIR. 'geo_divisions.php';
+require_once $FUNCTIONS_DIR. 'sequence_sets.php';
 require_once $FUNCTIONS_DIR. 'division_scheme.php';
 require_once $FUNCTIONS_DIR. 'geo_divide.php';
 require_once $FUNCTIONS_DIR. 'make_trees.php';
@@ -46,7 +46,7 @@ $OUTPUT_RESULTS = true;
 $OUTPUT_FILE = 'bold_phylodiv_results.csv';
 $OUTPUT_FILE_DELIMITER = ',';
 
-// Class to store names of fields in taxsets_data_file
+// Class to store names of fields in sequence_sets file
 class TAXSETS
 {
 	const TAXON = 'taxon';
@@ -161,8 +161,8 @@ $DIVISION_SCHEME = new Division_scheme(Division_scheme::COORDS, array(BOLD::LATI
 
 // Get sequences, subsample, align, and build trees
 
-[$download_attempted, $taxsets_data_file] = get_sequences($taxon, $MARKER);
-if (!$taxsets_data_file) {
+[$sequences_found, $download_attempted] = get_sequences($taxon, $MARKER);
+if (!$sequences_found) {
 	exit("No sequences for {$taxon} found locally or on BOLD.");
 }
 
@@ -170,8 +170,8 @@ if (!$download_attempted) {
 	echo("Found saved data file for {$taxon}.".PHP_EOL);
 }
 
-$geo_divisions = geo_divisions($taxon);
-if ($lc = count($geo_divisions)) {
+$locations = Sequence_Sets::get_locations($taxon, $DIVISION_SCHEME, $SEQUENCE_DATA_DELIMITER);
+if ($lc = count($locations)) {
 	if ($download_attempted) {
 		echo("Sorted downloaded sequences into {$lc} locations according to {$DIVISION_SCHEME->key}.".PHP_EOL);
 	} else {
@@ -179,7 +179,7 @@ if ($lc = count($geo_divisions)) {
 	}
 } else {
 	echo("Sorting sequences into location according to {$DIVISION_SCHEME->key}...".PHP_EOL);
-	$geo_divisions = geo_divide($taxon);
+	$locations = geo_divide($taxon);
 }
 
 if ($OUTPUT_RESULTS) {
@@ -208,11 +208,11 @@ if ($OUTPUT_RESULTS) {
 
 for ($i = 0; $i < $REPLICATES; $i++) {
 	echo ("Creating and aligning subsamples of size {$SUBSAMPLE_NUMBER}...".PHP_EOL);
-	// subsample_and_align takes $geo_divisions by reference and updates it to include only divisions successfully subsampled
-	$aligned_subsamples = subsample_and_align($SUBSAMPLE_NUMBER, $taxon, $geo_divisions);
+	// subsample_and_align takes $locations by reference and updates it to include only divisions successfully subsampled
+	$aligned_subsamples = subsample_and_align($SUBSAMPLE_NUMBER, $taxon, $locations);
 
 	$tree_file = $taxon.'_'.$i. '.tre';
-	if (!make_trees($aligned_subsamples, array_keys($geo_divisions), $tree_file)) {
+	if (!make_trees($aligned_subsamples, array_keys($locations), $tree_file)) {
 		exit('Tree construction failed.');
 	}
 	$tree_lengths = tree_lengths($tree_file);
@@ -226,7 +226,7 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 		foreach ($DIVISION_SCHEME->saved_params as $field) {
 			$location_cols[$field] = array_search($field, $output_header);
 		}
-		foreach ($geo_divisions as $key => $loc) {
+		foreach ($locations as $key => $loc) {
 			$entry = array(
 				$taxon,
 				$MARKER,
