@@ -2,7 +2,7 @@
 
 require_once $FUNCTIONS_DIR. 'subsample_taxsets.php';
 require_once $FUNCTIONS_DIR. 'align.php';
-require_once $FUNCTIONS_DIR. 'taxsets_data_file.php';
+require_once $FUNCTIONS_DIR. 'sequence_sets.php';
 
 
 // Picks subsamples of $subsample_size from groups of sequences listed in given data file, aligns them,
@@ -22,7 +22,7 @@ function subsample_and_align($subsample_size, $taxon, &$taxset_locations) {
     }
 
     // Get the columns from the data file
-    $taxsets_data_handle = fopen(taxsets_data_file($taxon), 'r');
+    $taxsets_data_handle = fopen(Sequence_Sets::get_file($taxon), 'r');
     $header = fgetcsv($taxsets_data_handle, 0, $TAXSETS_DATA_DELIMITER);
     $c_file = array_search(TAXSETS::FILE, $header);
     $c_taxset = array_search(TAXSETS::TAXSET, $header);

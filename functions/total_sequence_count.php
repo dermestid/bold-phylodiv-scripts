@@ -1,30 +1,21 @@
 <?php 
 
-include_once $FUNCTIONS_DIR. 'taxsets_data_file.php';
+include_once $FUNCTIONS_DIR. 'sequence_sets.php';
 
-// lookup total_sequence_count field in taxsets_data_file($taxon)
+// lookup total_sequence_count field in the data file
 function total_sequence_count($taxon) {
     global $TAXSETS_DATA_DELIMITER;
 
-    $data_file = taxsets_data_file($taxon);
-    $data_handle = fopen($data_file, 'r');
-
-    $count = 0;
-
-    $header = fgetcsv($data_handle, 0, $TAXSETS_DATA_DELIMITER);
-    $fields = array_flip($header);
-    while($entry = fgetcsv($data_handle, 0, $TAXSETS_DATA_DELIMITER)) {
-        $entry_taxon = $entry[$fields[TAXSETS::TAXON]];
-        if ($entry_taxon != $taxon) { continue; }
-
-        $entry_count = $entry[$fields[TAXSETS::TOTAL_SEQUENCE_COUNT]];
-        if ($entry_count == '') { $count = 0; break; }
-
-        $count = intval($entry_count);
+    $sets = Sequence_Sets::open($taxon, $TAXSETS_DATA_DELIMITER);
+    $count = $sets->get_entry($taxon, TAXSETS::TOTAL_SEQUENCE_COUNT);
+    
+    if ($count === false) {
+        // count up all the sequences in the file
+        // TODO
+        exit("Unimplemented total_sequence_count({$taxon}) requested.");
+    } else {
+        return intval($count);
     }
-
-    fclose($data_handle);
-    return $count;
 }
 
 ?>

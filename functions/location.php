@@ -92,37 +92,6 @@ class Location
     }
 }
 
-// // Returns a string encoding the location of the specimen represented by array $entry.
-// // Expects $entry to be in the format of a BOLD specimen record,
-// // and $fields should be an array of strings describing the fields of $entry (ie, the table header).
-// // The output of this function for given input varies with $DIVISION_SCHEME.
-// function get_geo_division($entry, $fields) {
-//     global $DIVISION_SCHEME;
-//     global $LATITUDE_GRID_SIZE_DEG, $LONGITUDE_GRID_SIZE_DEG;
-
-//     $col = array_flip($fields);
-
-//     // Check location is present: either coordinates or country
-//     $country = $lat = $lon = '';
-//     if ($DIVISION_SCHEME->scheme === division_scheme::COORDS) {
-//         if (($lat = $entry[$col[BOLD::LATITUDE]]) == '') { return false; }
-//         if (($lon = $entry[$col[BOLD::LONGITUDE]]) == '') { return false; }
-
-//         $lat_a = floor($lat / $LATITUDE_GRID_SIZE_DEG) * $LATITUDE_GRID_SIZE_DEG;
-// 		$lat_b = $lat_a + $LATITUDE_GRID_SIZE_DEG;
-// 		$grid_lat = $lat_a . 'to' . $lat_b;
-// 		$lon_a = floor($lon / $LONGITUDE_GRID_SIZE_DEG) * $LONGITUDE_GRID_SIZE_DEG;
-// 		$lon_b = $lon_a + $LONGITUDE_GRID_SIZE_DEG;
-// 		$grid_lon = $lon_a . 'to' . $lon_b;
-// 		return 'lat_' . $grid_lat . '_lon_' . $grid_lon;
-//     } else if ($DIVISION_SCHEME->scheme === division_scheme::COUNTRY) {
-//         if (($country = $entry[$col[BOLD::COUNTRY]]) == '') { return false; }
-//         return $country;
-//     } else {
-//         return false;
-//     }
-// }
-
 ?>
 
 
