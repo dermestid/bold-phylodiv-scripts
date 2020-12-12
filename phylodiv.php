@@ -12,8 +12,6 @@ require_once $FUNCTIONS_DIR. 'init.php';
 require_once $FUNCTIONS_DIR. 'get_sequences.php';
 require_once $FUNCTIONS_DIR. 'subsample_and_align.php';
 require_once $FUNCTIONS_DIR. 'sequence_sets.php';
-require_once $FUNCTIONS_DIR. 'division_scheme.php';
-require_once $FUNCTIONS_DIR. 'geo_divide.php';
 require_once $FUNCTIONS_DIR. 'make_trees.php';
 require_once $FUNCTIONS_DIR. 'tree_lengths.php';
 require_once $FUNCTIONS_DIR. 'total_sequence_count.php';
@@ -41,7 +39,7 @@ if ($lc = count($locations)) {
 	}
 } else {
 	echo("Sorting sequences into location according to {$DIVISION_SCHEME->key}...".PHP_EOL);
-	$locations = geo_divide($TAXON);
+	$locations = $DIVISION_SCHEME->sort($TAXON);
 }
 
 if ($OUTPUT_RESULTS) {
