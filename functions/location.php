@@ -1,6 +1,8 @@
 <?php
 
 require_once $FUNCTIONS_DIR. 'division_scheme.php';
+require_once $FUNCTIONS_DIR. 'coord_grid.php';
+require_once $FUNCTIONS_DIR. 'bold.php';
 
 class LocationException extends Exception 
 {
@@ -57,8 +59,8 @@ class Location
         $lat = $entry[BOLD::LATITUDE];
         $lon = $entry[BOLD::LONGITUDE];
 
-        $size_lat = $scheme_->arg_data[Coord_grid::SIZE_LAT];
-        $size_lon = $scheme_->arg_data[Coord_grid::SIZE_LON];
+        $size_lat = $scheme_->arg_data[Coord_Grid::SIZE_LAT];
+        $size_lon = $scheme_->arg_data[Coord_Grid::SIZE_LON];
 
         $lat_min = floor($lat / $size_lat) * $size_lat;
 		$lat_max = $lat_min + $size_lat;

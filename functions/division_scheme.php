@@ -1,5 +1,7 @@
 <?php
 
+require_once $FUNCTIONS_DIR. 'coord_grid.php';
+
 class Division_scheme
 {
     const COORDS = 'COORDS';
@@ -38,7 +40,7 @@ class Division_scheme
         global $COORD_GRID;
 
         $a = $COORD_GRID->params;
-        $k = self::COORDS.'_'.$a[Coord_grid::SIZE_LAT].'x'.$a[Coord_grid::SIZE_LON];
+        $k = self::COORDS.'_'.$a[Coord_Grid::SIZE_LAT].'x'.$a[Coord_Grid::SIZE_LON];
 
         return array($k, $a);
     }
