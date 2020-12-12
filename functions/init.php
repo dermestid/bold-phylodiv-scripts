@@ -1,6 +1,7 @@
 <?php
 
 require_once 'coord_grid.php';
+require_once 'division_scheme.php';
 require_once 'bold.php';
 
 $COORD_GRID;
