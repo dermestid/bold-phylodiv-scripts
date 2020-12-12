@@ -1,6 +1,7 @@
 <?php 
 
 require_once $FUNCTIONS_DIR. 'data_file.php';
+require_once $FUNCTIONS_DIR. 'taxsets.php';
 require_once $FUNCTIONS_DIR. 'division_scheme.php';
 require_once $FUNCTIONS_DIR. 'sequence_file.php';
 require_once $FUNCTIONS_DIR. 'location.php'; // Location class

@@ -4,6 +4,7 @@ require_once $FUNCTIONS_DIR. 'sequence_file.php';
 require_once $FUNCTIONS_DIR. 'make_fasta_header.php';
 require_once $FUNCTIONS_DIR. 'sequence_data.php';
 require_once $FUNCTIONS_DIR. 'sequence_sets.php';
+require_once $FUNCTIONS_DIR. 'bold.php';
 
 // Look for downloaded sequences of $marker for $taxon. If no local sequence set file is found,
 // download the sequences from BOLD, and store subsets of them by location.

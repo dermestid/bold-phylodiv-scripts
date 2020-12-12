@@ -1,5 +1,6 @@
 <?php
 
+require_once $FUNCTIONS_DIR. 'taxsets.php';
 require_once $FUNCTIONS_DIR. 'subsample_taxsets.php';
 require_once $FUNCTIONS_DIR. 'align.php';
 require_once $FUNCTIONS_DIR. 'sequence_sets.php';
