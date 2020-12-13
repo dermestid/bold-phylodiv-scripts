@@ -4,6 +4,8 @@ require_once $FUNCTIONS_DIR. 'taxsets.php';
 require_once $FUNCTIONS_DIR. 'subsample_taxsets.php';
 require_once $FUNCTIONS_DIR. 'align.php';
 require_once $FUNCTIONS_DIR. 'sequence_sets.php';
+require_once $FUNCTIONS_DIR. 'say.php';
+require_once $FUNCTIONS_DIR. 'progress_bar.php';
 
 
 // Picks subsamples of $subsample_size from groups of sequences listed in given data file, aligns them,
@@ -32,6 +34,8 @@ function subsample_and_align($subsample_size, $taxon, &$taxset_locations) {
     $nexus_string = '#NEXUS' . PHP_EOL;
     $file_offset = strlen($nexus_string);
 
+    $progress = Progress_Bar::open(count($taxset_locations));
+
     // Go through all entries
     while ($entry = fgetcsv($taxsets_data_handle, 0, $TAXSETS_DATA_DELIMITER)) {
 
@@ -40,9 +44,11 @@ function subsample_and_align($subsample_size, $taxon, &$taxset_locations) {
         $location_key = $entry[$c_location];
 
         if (!array_key_exists($location_key, $taxset_locations)) { continue; }
+
+        $progress->update(1);
+
         // Skip over taxsets smaller than the sample
         if (count(explode($TAXSET_DELIMITER, $taxset_str)) < $subsample_size) {
-//          array_splice($taxset_locations, array_search($location_key, $taxset_locations), 1);
             unset($taxset_locations[$location_key]);
             continue;
         }
@@ -51,7 +57,7 @@ function subsample_and_align($subsample_size, $taxon, &$taxset_locations) {
         [$subsample_id, $subsample_file, $subsample_taxset]
             = subsample_taxsets($subsample_size, $taxset_str, $TAXSET_DELIMITER, $sequence_file);
         if ($subsample_taxset === '') { 
-            echo('Sequences missing from subsample ' . $subsample_id . PHP_EOL);
+            say("Sequences missing from subsample {$subsample_id}");
             continue; 
         }
         
@@ -60,7 +66,7 @@ function subsample_and_align($subsample_size, $taxon, &$taxset_locations) {
         $subsample_file_aligned = align($subsample_file, $alignment_log_file);
 
         if ($subsample_file_aligned === '') {
-            echo('Alignment failed for subsample ' . $subsample_id . PHP_EOL);
+            say("Alignment failed for subsample {$subsample_id}");
             continue;
         }
 
@@ -69,12 +75,13 @@ function subsample_and_align($subsample_size, $taxon, &$taxset_locations) {
         if ($DELETE_TEMP_FILES)
         {
             foreach (glob($TEMP_DIR . $subsample_id .'.*') as $file) {
-                // echo('Deleting '.$file.PHP_EOL);
                 unlink($file);
             }
         }
 
     }
+
+    Progress_Bar::close($progress);
 
     return $nexus_string;
 }

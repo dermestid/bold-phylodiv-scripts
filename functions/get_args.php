@@ -1,6 +1,7 @@
 <?php
 
 require_once $FUNCTIONS_DIR. 'default_args.php';
+// require_once $FUNCTIONS_DIR. 'say.php';
 
 function get_args() {
     global $argc, $argv;
@@ -12,7 +13,7 @@ function get_args() {
 
     while($i > 0) {
         $ARGS[$i - 1] = $argv[$i];
-        // echo('set '. $args[$i] . ' to ' . $argv[$i] . PHP_EOL);
+        // say('set '. $args[$i] . ' to ' . $argv[$i]);
         $i--;
     }
 }

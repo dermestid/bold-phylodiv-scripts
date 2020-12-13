@@ -5,6 +5,7 @@ require_once $FUNCTIONS_DIR. 'sequence_file.php';
 require_once $FUNCTIONS_DIR. 'total_sequence_count.php';
 require_once $FUNCTIONS_DIR. 'sequence_sets.php';
 require_once $FUNCTIONS_DIR. 'sequence_data.php';
+require_once $FUNCTIONS_DIR. 'say.php';
 
 class Division_scheme
 {
@@ -76,14 +77,14 @@ class Division_scheme
 
             // Update the user as this may take a while
             if ($sequence_index % 500 == 0) {
-                echo('Sorted ' . $sequence_index . ' into locations...'.PHP_EOL);
+                say_verbose("Sorted {$sequence_index} into locations...");
             }
         } // end while loop
         fclose($sequences_handle);
         Sequence_Data::close($sequence_data);
 
         if ($sequence_index == 0) {
-            exit("Error: sort({$taxon}) requested empty sequence file {$sequence_file}". PHP_EOL);
+            exit("Error: sort({$taxon}) requested empty sequence file {$sequence_file}");
         }
 
         // Save data in a csv and return the new locations of the sets

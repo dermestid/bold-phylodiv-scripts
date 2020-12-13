@@ -1,5 +1,7 @@
 <?php
 
+require_once $FUNCTIONS_DIR. 'verbosity.php';
+
 // Constants
 
 $PAUP_COMMANDS_SETUP = $FUNCTIONS_DIR. 'paup_commands_setup.txt';
@@ -10,6 +12,7 @@ $MINIMUM_SUBSAMPLE_NUMBER = 3; // need at least 3 taxa to build trees
 $MARKER = 'COI-5P';
 
 $REPLICATES = 5;
+$VERBOSITY = Verbosity::SOME;
 
 $DELETE_TEMP_FILES = true;
 $PRINT_OUTPUT = false;

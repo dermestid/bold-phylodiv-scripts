@@ -1,5 +1,7 @@
 <?php
 
+require_once $FUNCTIONS_DIR. 'say.php';
+
 function tree_lengths($tree_filename) {
 	$tree = file_get_contents($tree_filename);
 
@@ -8,7 +10,7 @@ function tree_lengths($tree_filename) {
 
 	// Find Newick trees within file
 	if(!preg_match_all($TREE_REGEX, $tree, $tree_lines)) {
-		echo('Trees not found in file ' . $tree_filename . PHP_EOL);
+		say("Trees not found in file {$tree_filename}");
 		return array();
 	}
 
@@ -19,7 +21,7 @@ function tree_lengths($tree_filename) {
 	{
 		preg_match_all($BRANCH_LENGTH_REGEX, $tree_line, $branch_lengths);
 		if(!count($branch_lengths[0])) {
-			echo('Branch lengths missing from Newick tree in ' . $tree_filename . PHP_EOL);
+			say("Branch lengths missing from Newick tree in {$tree_filename}");
 			continue;
 		}
 
