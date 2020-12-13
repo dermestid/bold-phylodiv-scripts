@@ -78,7 +78,7 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 	$aligned_subsamples = subsample_and_align($SUBSAMPLE_COUNT, $TAXON, $locations);
 
 	$tree_file = $TAXON.'_'.$i. '.tre';
-	if (!make_trees($aligned_subsamples, array_keys($locations), $tree_file)) {
+	if (!make_trees($aligned_subsamples, $tree_file)) {
 		exit('Tree construction failed.');
 	}
 	$tree_lengths = tree_lengths($tree_file);
@@ -92,6 +92,7 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 		foreach ($DIVISION_SCHEME->saved_params as $field) {
 			$location_cols[$field] = array_search($field, $output_header);
 		}
+		$j = 0;
 		foreach ($locations as $key => $loc) {
 			$entry = array(
 				$TAXON,
@@ -100,8 +101,9 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 				$DIVISION_SCHEME->key,
 				$key,
 				$SUBSAMPLE_COUNT,
-				$tree_lengths[$key]
+				$tree_lengths[$j]
 			);
+			$j++;
 			$entry = array_pad($entry, $output_header_size, '');
 			// Add in the relevant location data
 			foreach ($loc->data as $field => $value) {

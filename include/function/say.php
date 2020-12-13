@@ -15,7 +15,7 @@ function say_line($message) {
 function say($message) {
     global $VERBOSITY;
 
-	if ($VERBOSITY > Verbosity::NONE) {
+	if ($VERBOSITY > VERBOSITY::NONE) {
         say_line($message);
     }
 }
@@ -23,7 +23,7 @@ function say($message) {
 function say_verbose($message) {
     global $VERBOSITY;
 
-    if ($VERBOSITY === Verbosity::FULL) {
+    if ($VERBOSITY === VERBOSITY::FULL) {
         say_line($message);
     }
 }
