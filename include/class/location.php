@@ -1,8 +1,8 @@
 <?php
 
-require_once $FUNCTIONS_DIR. 'division_scheme.php';
-require_once $FUNCTIONS_DIR. 'coord_grid.php';
-require_once $FUNCTIONS_DIR. 'bold.php';
+require_once $CLASS_DIR. 'division_scheme.php';
+require_once $CLASS_DIR. 'coord_grid.php';
+require_once $CLASS_DIR. 'bold.php';
 
 class LocationException extends Exception 
 {

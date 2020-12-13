@@ -1,7 +1,7 @@
 <?php
 
-require_once $FUNCTIONS_DIR. 'data_file.php';
-// require_once $FUNCTIONS_DIR. 'say.php';
+require_once $CLASS_DIR. 'data_file.php';
+// require_once $FUNCTION_DIR. 'say.php';
 
 class Sequence_Data
 {

@@ -1,6 +1,6 @@
 <?php
 
-require_once $FUNCTIONS_DIR. 'say.php';
+require_once $FUNCTION_DIR. 'say.php';
 
 function tree_lengths($tree_filename) {
 	$tree = file_get_contents($tree_filename);

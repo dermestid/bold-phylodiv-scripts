@@ -1,7 +1,7 @@
 <?php 
 
-require_once $FUNCTIONS_DIR. 'sequence_sets.php';
-require_once $FUNCTIONS_DIR. 'taxsets.php';
+require_once $CLASS_DIR. 'sequence_sets.php';
+require_once $CLASS_DIR. 'taxsets.php';
 
 // lookup total_sequence_count field in the data file
 function total_sequence_count($taxon) {

@@ -1,6 +1,6 @@
 <?php
 
-require_once $FUNCTIONS_DIR. 'verbosity.php';
+require_once $CLASS_DIR. 'verbosity.php';
 
 $output_blocked = 0;
 

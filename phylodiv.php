@@ -3,19 +3,23 @@
 
 $WINDOWS = (stripos(PHP_OS, 'WIN') === 0);
 $DIR = __DIR__ . DIRECTORY_SEPARATOR ;
+$INCLUDE_DIR = $DIR . 'include' . DIRECTORY_SEPARATOR;
+$FUNCTION_DIR = $INCLUDE_DIR .'function'. DIRECTORY_SEPARATOR;
+$CLASS_DIR = $INCLUDE_DIR . 'class'. DIRECTORY_SEPARATOR;
+$CONFIG_DIR = $INCLUDE_DIR. 'config'. DIRECTORY_SEPARATOR;
+$TEMPLATE_DIR = $DIR. 'template'. DIRECTORY_SEPARATOR;
+$NEXUS_DIR = $TEMPLATE_DIR. 'nexus'. DIRECTORY_SEPARATOR;
 
-$FUNCTIONS_DIR = $DIR .'functions'. DIRECTORY_SEPARATOR;
-
-require_once $FUNCTIONS_DIR. 'constants.php';
-require_once $FUNCTIONS_DIR. 'say.php';
-require_once $FUNCTIONS_DIR. 'get_args.php';
-require_once $FUNCTIONS_DIR. 'init.php';
-require_once $FUNCTIONS_DIR. 'get_sequences.php';
-require_once $FUNCTIONS_DIR. 'subsample_and_align.php';
-require_once $FUNCTIONS_DIR. 'sequence_sets.php';
-require_once $FUNCTIONS_DIR. 'make_trees.php';
-require_once $FUNCTIONS_DIR. 'tree_lengths.php';
-require_once $FUNCTIONS_DIR. 'total_sequence_count.php';
+require_once $CONFIG_DIR. 'constants.php';
+require_once $FUNCTION_DIR. 'say.php';
+require_once $FUNCTION_DIR. 'get_args.php';
+require_once $FUNCTION_DIR. 'init.php';
+require_once $FUNCTION_DIR. 'get_sequences.php';
+require_once $FUNCTION_DIR. 'subsample_and_align.php';
+require_once $CLASS_DIR. 'sequence_sets.php';
+require_once $FUNCTION_DIR. 'make_trees.php';
+require_once $FUNCTION_DIR. 'tree_lengths.php';
+require_once $FUNCTION_DIR. 'total_sequence_count.php';
 
 get_args();
 init();

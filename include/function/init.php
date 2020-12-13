@@ -1,8 +1,8 @@
 <?php
 
-require_once 'coord_grid.php';
-require_once 'division_scheme.php';
-require_once 'bold.php';
+require_once $CLASS_DIR. 'coord_grid.php';
+require_once $CLASS_DIR. 'division_scheme.php';
+require_once $CLASS_DIR. 'bold.php';
 
 $COORD_GRID;
 $DIVISION_SCHEME;

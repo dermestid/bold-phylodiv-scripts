@@ -1,11 +1,11 @@
 <?php
 
-require_once $FUNCTIONS_DIR. 'sequence_file.php';
-require_once $FUNCTIONS_DIR. 'make_fasta_header.php';
-require_once $FUNCTIONS_DIR. 'sequence_data.php';
-require_once $FUNCTIONS_DIR. 'sequence_sets.php';
-require_once $FUNCTIONS_DIR. 'bold.php';
-require_once $FUNCTIONS_DIR. 'say.php';
+require_once $FUNCTION_DIR. 'get_sequence_file.php';
+require_once $FUNCTION_DIR. 'make_fasta_header.php';
+require_once $CLASS_DIR. 'sequence_data.php';
+require_once $CLASS_DIR. 'sequence_sets.php';
+require_once $CLASS_DIR. 'bold.php';
+require_once $FUNCTION_DIR. 'say.php';
 
 // Look for downloaded sequences of $marker for $taxon. If no local sequence set file is found,
 // download the sequences from BOLD, and store subsets of them by location.
@@ -19,7 +19,7 @@ function get_sequences($taxon, $marker) {
     $SEQUENCE_SOURCE_FORMAT = 'tsv';
     $SOURCE_DELIMITER = "\t";
 
-    $sequence_file = sequence_file($taxon);
+    $sequence_file = get_sequence_file($taxon);
     $data_file = Sequence_Data::get_file($taxon);
     $sets_file = Sequence_Sets::get_file($taxon);
     if (

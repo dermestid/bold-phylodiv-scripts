@@ -1,6 +1,6 @@
 <?php
 
-require_once $FUNCTIONS_DIR. 'bold.php';
+require_once $CLASS_DIR. 'bold.php';
 
 function make_fasta_header(array $seq_data) {
 
