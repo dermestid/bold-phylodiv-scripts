@@ -12,7 +12,7 @@ $MINIMUM_SAMPLE_COUNT = 3; // need at least 3 taxa to build trees
 $MARKER = 'COI-5P';
 
 $REPLICATES = 5;
-$VERBOSITY = Verbosity::SOME;
+$VERBOSITY = VERBOSITY::SOME;
 
 $DELETE_TEMP_FILES = true;
 $PRINT_OUTPUT = false;

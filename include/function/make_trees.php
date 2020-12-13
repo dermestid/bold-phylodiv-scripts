@@ -2,13 +2,11 @@
 
 // Calculates trees for input aligned subsamples of sequences.
 // $data is a string in NEXUS format specifying sequences and sets of aligned sequences.
-// $set_names is an array of strings which name sets in $data.
 // Outputs a single NEXUS file of multiple TREE blocks to $tre_filename.
-function make_trees($data, $tree_names, $tre_filename) {
+function make_trees($data, $tre_filename) {
 	global $PAUP_PATH, $PAUP_COMMANDS_SETUP, $PAUP_COMMANDS_TREE, $PAUP_COMMANDS_END;
 	global $TEMP_DIR, $LOG_DIR, $DELETE_TEMP_FILES;
 
-	$TREE_DECLARATION_REGEX = "/tree\s+'[^']*'\s*=/i";
 	$DATA_BLOCK_REGEX = '/matrix\s*[^;]*;\s*end\s*;/is';
 
 	if (!file_exists($PAUP_COMMANDS_SETUP)) { return false; }
@@ -51,16 +49,6 @@ function make_trees($data, $tree_names, $tre_filename) {
 	$tre_temp_name = $nex_filename_base . '.tre';
 	if (file_exists($tre_temp_name)) {
 		rename($tre_temp_name, $tre_filename);
-
-		// Rename the trees
-		$tree_list = file_get_contents($tre_filename);
-		$i = 0;
-		$rename_tree = function ($s) use ($tree_names, &$i) { 
-			$decl = "tree '".$tree_names[$i]."' =";
-			$i++;
-			return $decl; };
-		$tree_list = preg_replace_callback($TREE_DECLARATION_REGEX, $rename_tree, $tree_list);
-		file_put_contents($tre_filename, $tree_list);
 	} else {
 		return false;
 	}

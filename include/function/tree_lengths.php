@@ -32,8 +32,7 @@ function tree_lengths($tree_filename) {
 			// We only need the total tree length, which is preserved if we take the absolute value.
 			$sum += abs(floatval(substr($len, 2, -1))); // starts with ':' and ends with ',' ')' or ';'
 		}
-		$tree_name = explode("'", $tree_line)[1];
-		$tree_lengths[$tree_name] = $sum;
+		array_push($tree_lengths, $sum);
 	}
 	return $tree_lengths;
 }
