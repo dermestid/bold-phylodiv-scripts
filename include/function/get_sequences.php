@@ -90,7 +90,7 @@ function get_sequences($taxon, $marker) {
         // update the user for big downloads
         $sequence_index++;
         if ($sequence_index % 250 == 0) {
-            say("Saved {$sequence_index} sequences...");
+            say_lastline("Saved {$sequence_index} sequences...");
         }
 
         // Store the full location etc metadata for the sequence locally, 
