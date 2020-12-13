@@ -8,7 +8,7 @@ $PAUP_COMMANDS_SETUP = $NEXUS_DIR. 'paup_commands_setup.txt';
 $PAUP_COMMANDS_TREE = $NEXUS_DIR. 'paup_commands_tree.txt';
 $PAUP_COMMANDS_END = $NEXUS_DIR. 'paup_commands_end.txt';
 
-$MINIMUM_SUBSAMPLE_NUMBER = 3; // need at least 3 taxa to build trees
+$MINIMUM_SAMPLE_COUNT = 3; // need at least 3 taxa to build trees
 $MARKER = 'COI-5P';
 
 $REPLICATES = 5;
@@ -20,7 +20,7 @@ $OUTPUT_RESULTS = true;
 $OUTPUT_FILE = 'bold_phylodiv_results.csv';
 $OUTPUT_FILE_DELIMITER = ',';
 
-$TAXSETS_DATA_DELIMITER = ',';
+$SETS_DATA_DELIMITER = ',';
 $TAXSET_DELIMITER = ' ';
 $SEQUENCE_DATA_DELIMITER = ',';
 

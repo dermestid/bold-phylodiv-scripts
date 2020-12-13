@@ -73,9 +73,9 @@ if ($OUTPUT_RESULTS) {
 
 for ($i = 0; $i < $REPLICATES; $i++) {
 	$round = $i + 1;
-	say("Round {$round} of {$REPLICATES}: Creating and aligning subsamples of size {$SUBSAMPLE_NUMBER}...");
-	// subsample_and_align takes $locations by reference and updates it to include only divisions successfully subsampled
-	$aligned_subsamples = subsample_and_align($SUBSAMPLE_NUMBER, $TAXON, $locations);
+	say("Round {$round} of {$REPLICATES}: Creating and aligning subsamples of size {$SUBSAMPLE_COUNT}...");
+	// subsample_and_align takes $locations by reference and updates it to include only locations successfully subsampled
+	$aligned_subsamples = subsample_and_align($SUBSAMPLE_COUNT, $TAXON, $locations);
 
 	$tree_file = $TAXON.'_'.$i. '.tre';
 	if (!make_trees($aligned_subsamples, array_keys($locations), $tree_file)) {
@@ -83,7 +83,7 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 	}
 	$tree_lengths = tree_lengths($tree_file);
 	if ($PRINT_OUTPUT) {
-		say('Tree lengths for location samples: ');
+		say('Tree lengths for location subsamples: ');
 		print_r($tree_lengths);
 	}
 
@@ -99,7 +99,7 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 				total_sequence_count($TAXON),
 				$DIVISION_SCHEME->key,
 				$key,
-				$SUBSAMPLE_NUMBER,
+				$SUBSAMPLE_COUNT,
 				$tree_lengths[$key]
 			);
 			$entry = array_pad($entry, $output_header_size, '');

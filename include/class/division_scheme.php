@@ -41,12 +41,12 @@ class Division_scheme
         }
     }
 
-    // Sorts the downloaded sequences for $taxon into taxsets and adds them as entries 
+    // Sorts the downloaded sequences for $taxon into sets and adds them as entries 
     // to the sequence sets file, which is assumed to already exist with some entries.
     // Doesn't do a check if they're already in there, and will duplicate entries if they are.
     // Returns an array of the new geographical division names.
     function sort($taxon) {
-        global $SEQUENCE_DATA_DELIMITER, $TAXSETS_DATA_DELIMITER;
+        global $SEQUENCE_DATA_DELIMITER, $SETS_DATA_DELIMITER;
 
         if(!(file_exists($data_file = Sequence_Sets::get_file($taxon)))) { 
             exit("Error: non-existent {$data_file} requested by sort({$taxon})");
@@ -60,7 +60,7 @@ class Division_scheme
 
         $sequence_index = 0;
 
-        $sets = Sequence_Sets::open($taxon, $TAXSETS_DATA_DELIMITER);
+        $sets = Sequence_Sets::open($taxon, $SETS_DATA_DELIMITER);
         $sequence_data = Sequence_Data::open($taxon, $SEQUENCE_DATA_DELIMITER);
         $sequences_handle = fopen($sequence_file, 'r');
 

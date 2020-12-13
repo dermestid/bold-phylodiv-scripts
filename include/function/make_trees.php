@@ -1,8 +1,8 @@
 <?php
 
-// Calculates trees for input aligned samples of sequences.
-// $data is a string in NEXUS format specifying sequences and taxsets of aligned sequences.
-// $taxset_names is an array of strings which name taxsets set in $data.
+// Calculates trees for input aligned subsamples of sequences.
+// $data is a string in NEXUS format specifying sequences and sets of aligned sequences.
+// $set_names is an array of strings which name sets in $data.
 // Outputs a single NEXUS file of multiple TREE blocks to $tre_filename.
 function make_trees($data, $tree_names, $tre_filename) {
 	global $PAUP_PATH, $PAUP_COMMANDS_SETUP, $PAUP_COMMANDS_TREE, $PAUP_COMMANDS_END;

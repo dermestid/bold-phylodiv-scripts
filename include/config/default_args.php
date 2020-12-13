@@ -4,7 +4,7 @@
 
 $TAXON = '';
 
-$SUBSAMPLE_NUMBER = 20;
+$SUBSAMPLE_COUNT = 20;
 
 $LATITUDE_GRID_SIZE_DEG = 30;
 $LONGITUDE_GRID_SIZE_DEG = 30;
@@ -16,9 +16,11 @@ if ($WINDOWS) {
 	$PAUP_PATH = '%appdata%\\PAUP4\\paup4';
 }
 
+// Arguments to be given to the script
+// Excluding the first, automatically-given argument (which is just the path to the script)
 $ARGS = array(
     &$TAXON,
-    &$SUBSAMPLE_NUMBER,
+    &$SUBSAMPLE_COUNT,
     &$LATITUDE_GRID_SIZE_DEG,
     &$LONGITUDE_GRID_SIZE_DEG,
     &$CLUSTAL_PATH,
