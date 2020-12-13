@@ -23,7 +23,7 @@ class Progress_Bar {
         echo(self::START);
     }
 
-
+    // Not threadsafe
     public static function open(int $max_, int $len_ = 20) {
         global $output_blocked;
 
@@ -33,6 +33,7 @@ class Progress_Bar {
         return new Progress_Bar($max_, $len_);
     }
 
+    // Not threadsafe
     public static function close(Progress_Bar $b) {
         global $output_blocked;
 
@@ -41,6 +42,7 @@ class Progress_Bar {
         unset($b);
     }
 
+    // Not threadsafe if used on the same object. TODO: make this atomic
     public function update($increment) {
 
         echo("\r"); // Rewrite last line: depends on terminal behaviour, and hope that we didn't add a new line!
