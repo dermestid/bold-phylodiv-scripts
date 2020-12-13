@@ -1,9 +1,11 @@
 <?php
 
+require_once $FUNCTIONS_DIR. 'say.php';
+
 function align($infile, $logfile) {
     global $CLUSTAL_PATH;
     
-    echo('Aligning sequences in ' . $infile . '...' . PHP_EOL);
+    say_verbose("Aligning sequences in {$infile}...");
 
 	$command = $CLUSTAL_PATH 
 	. ' -INFILE=' . $infile 
@@ -19,7 +21,7 @@ function align($infile, $logfile) {
         // diagnose from log file
         $log = file_get_contents($logfile);
         if (preg_match('/Only 1 sequence/i', $log)) {
-            echo('Only one sequence given, cannot align' . PHP_EOL);
+            say_verbose('Only one sequence given, cannot align.');
         }
 
         return '';

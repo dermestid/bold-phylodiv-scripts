@@ -1,6 +1,7 @@
 <?php
 
 require_once $FUNCTIONS_DIR. 'data_file.php';
+// require_once $FUNCTIONS_DIR. 'say.php';
 
 class Sequence_Data
 {
@@ -44,7 +45,7 @@ class Sequence_Data
                 if ($entry[$this->i_file] === $seq_file) {
                     $index = intval($entry[$this->i_sequence_index]);
                 } else {
-                    // echo ("wrong file: {$entry[$this->i_file]}".PHP_EOL);
+                    // say("wrong file: {$entry[$this->i_file]}");
                     // continue;
                 }
             } else { // eof

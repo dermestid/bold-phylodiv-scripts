@@ -67,7 +67,6 @@ function make_trees($data, $tree_names, $tre_filename) {
 
 	if ($DELETE_TEMP_FILES) {
 		foreach (glob($nex_filename_base .'.*') as $file) {
-			// echo('Deleting '.$file.PHP_EOL);
 			unlink($file);
 		}
 	}

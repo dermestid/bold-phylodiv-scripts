@@ -5,6 +5,7 @@ require_once $FUNCTIONS_DIR. 'make_fasta_header.php';
 require_once $FUNCTIONS_DIR. 'sequence_data.php';
 require_once $FUNCTIONS_DIR. 'sequence_sets.php';
 require_once $FUNCTIONS_DIR. 'bold.php';
+require_once $FUNCTIONS_DIR. 'say.php';
 
 // Look for downloaded sequences of $marker for $taxon. If no local sequence set file is found,
 // download the sequences from BOLD, and store subsets of them by location.
@@ -37,7 +38,7 @@ function get_sequences($taxon, $marker) {
         unlink($sets_file);
     }
 
-    echo('Downloading sequences for ' . $taxon . '...' . PHP_EOL);
+    say("Downloading sequences for {$taxon}...");
 
     // Open stream handle
     $bold_query = $BOLD_URL_PREFIX . '?'
@@ -64,7 +65,7 @@ function get_sequences($taxon, $marker) {
         // Check for broken entry
         $entry_size = count($entry);
         if ($entry_size > $header_size) { 
-            // echo("Bad entry with size {$entry_size}".php_EOL);
+            // say("Bad entry with size {$entry_size}");
             continue;
         }
         // make associative entry
@@ -89,7 +90,7 @@ function get_sequences($taxon, $marker) {
         // update the user for big downloads
         $sequence_index++;
         if ($sequence_index % 250 == 0) {
-            echo("Saved {$sequence_index} sequences...". PHP_EOL);
+            say("Saved {$sequence_index} sequences...");
         }
 
         // Store the full location etc metadata for the sequence locally, 
@@ -107,7 +108,7 @@ function get_sequences($taxon, $marker) {
     Sequence_Data::close($sequence_data);
 
     if ($sequence_index == 0) {
-        echo('No sequences were downloaded. Bad taxon name?' . PHP_EOL);
+        say('No sequences were downloaded. Bad taxon name?');
         return array(false, true);
     } else {
         $sets->update_sequence_count($taxon, $sequence_index);

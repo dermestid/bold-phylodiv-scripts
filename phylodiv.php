@@ -7,6 +7,7 @@ $DIR = __DIR__ . DIRECTORY_SEPARATOR ;
 $FUNCTIONS_DIR = $DIR .'functions'. DIRECTORY_SEPARATOR;
 
 require_once $FUNCTIONS_DIR. 'constants.php';
+require_once $FUNCTIONS_DIR. 'say.php';
 require_once $FUNCTIONS_DIR. 'get_args.php';
 require_once $FUNCTIONS_DIR. 'init.php';
 require_once $FUNCTIONS_DIR. 'get_sequences.php';
@@ -27,18 +28,18 @@ if (!$sequences_found) {
 }
 
 if (!$download_attempted) {
-	echo("Found saved data file for {$TAXON}.".PHP_EOL);
+	say_verbose("Found saved data file for {$TAXON}.");
 }
 
 $locations = Sequence_Sets::get_locations($TAXON, $DIVISION_SCHEME, $SEQUENCE_DATA_DELIMITER);
 if ($lc = count($locations)) {
 	if ($download_attempted) {
-		echo("Sorted downloaded sequences into {$lc} locations according to {$DIVISION_SCHEME->key}.".PHP_EOL);
+		say_verbose("Sorted downloaded sequences into {$lc} locations according to {$DIVISION_SCHEME->key}.");
 	} else {
-		echo("Found sorting of sequences into {$lc} locations according to {$DIVISION_SCHEME->key}.".PHP_EOL);
+		say_verbose("Found sorting of sequences into {$lc} locations according to {$DIVISION_SCHEME->key}.");
 	}
 } else {
-	echo("Sorting sequences into location according to {$DIVISION_SCHEME->key}...".PHP_EOL);
+	say_verbose("Sorting sequences into location according to {$DIVISION_SCHEME->key}...");
 	$locations = $DIVISION_SCHEME->sort($TAXON);
 }
 
@@ -67,7 +68,8 @@ if ($OUTPUT_RESULTS) {
 }
 
 for ($i = 0; $i < $REPLICATES; $i++) {
-	echo ("Creating and aligning subsamples of size {$SUBSAMPLE_NUMBER}...".PHP_EOL);
+	$round = $i + 1;
+	say("Round {$round} of {$REPLICATES}: Creating and aligning subsamples of size {$SUBSAMPLE_NUMBER}...");
 	// subsample_and_align takes $locations by reference and updates it to include only divisions successfully subsampled
 	$aligned_subsamples = subsample_and_align($SUBSAMPLE_NUMBER, $TAXON, $locations);
 
@@ -77,7 +79,7 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 	}
 	$tree_lengths = tree_lengths($tree_file);
 	if ($PRINT_OUTPUT) {
-		echo('Tree lengths for location samples: '.PHP_EOL);
+		say('Tree lengths for location samples: ');
 		print_r($tree_lengths);
 	}
 
@@ -106,6 +108,8 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 	}
 } // end for loop
 fclose($output_handle);
+
+say("Wrote tree lengths to {$OUTPUT_FILE}.");
 
 // clear up temp folder
 $temp_dir_handle = opendir($TEMP_DIR);
