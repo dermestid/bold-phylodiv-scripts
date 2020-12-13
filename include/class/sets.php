@@ -1,7 +1,7 @@
 <?php
 
 // Class to store names of fields in sequence_sets file
-class TAXSETS
+class SETS
 {
 	const TAXON = 'taxon';
 	const TOTAL_SEQUENCE_COUNT = 'total_sequence_count';

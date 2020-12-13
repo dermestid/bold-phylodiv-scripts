@@ -1,7 +1,7 @@
 <?php
 
-require_once $CLASS_DIR. 'taxsets.php';
-require_once $FUNCTION_DIR. 'subsample_taxsets.php';
+require_once $CLASS_DIR. 'sets.php';
+require_once $FUNCTION_DIR. 'subsample_taxset.php';
 require_once $FUNCTION_DIR. 'align.php';
 require_once $CLASS_DIR. 'sequence_sets.php';
 require_once $FUNCTION_DIR. 'say.php';
@@ -11,51 +11,52 @@ require_once $CLASS_DIR. 'progress_bar.php';
 // Picks subsamples of $subsample_size from groups of sequences listed in given data file, aligns them,
 // and outputs a string in NEXUS format consisting of aligned sequences in separate DATA blocks.
 // Outputs a warning if any of the subsampled sequences are missing from the file they should be in.
-// The parameter &$taxset_locations is updated to include only the locations which have been sampled.
-function subsample_and_align($subsample_size, $taxon, &$taxset_locations) {
-    global $MINIMUM_SUBSAMPLE_NUMBER, $LOG_DIR;
-    global $TAXSETS_DATA_DELIMITER, $TAXSET_DELIMITER;
+// The parameter &$locations is updated to include only the locations which have been subsampled.
+function subsample_and_align($subsample_size, $taxon, &$locations) {
+    global $MINIMUM_SAMPLE_COUNT, $LOG_DIR;
+    global $SETS_DATA_DELIMITER, $TAXSET_DELIMITER;
     global $TEMP_DIR, $DELETE_TEMP_FILES;
 
     $CLUSTAL_LOG_SUFFIX = '_CLUSTALW.log';
 
-    if ($subsample_size < $MINIMUM_SUBSAMPLE_NUMBER) { 
-        $taxset_locations = array();
+    if ($subsample_size < $MINIMUM_SAMPLE_COUNT) { 
+        $locations = array();
         return ''; 
     }
 
     // Get the columns from the data file
-    $taxsets_data_handle = fopen(Sequence_Sets::get_file($taxon), 'r');
-    $header = fgetcsv($taxsets_data_handle, 0, $TAXSETS_DATA_DELIMITER);
-    $c_file = array_search(TAXSETS::FILE, $header);
-    $c_taxset = array_search(TAXSETS::TAXSET, $header);
-    $c_location = array_search(TAXSETS::LOCATION, $header);
+    $sets_handle = fopen(Sequence_Sets::get_file($taxon), 'r');
+    $header = fgetcsv($sets_handle, 0, $SETS_DATA_DELIMITER);
+    $c_file = array_search(SETS::FILE, $header);
+    $c_taxset = array_search(SETS::TAXSET, $header);
+    $c_location = array_search(SETS::LOCATION, $header);
     
     $nexus_string = '#NEXUS' . PHP_EOL;
     $file_offset = strlen($nexus_string);
 
-    $progress = Progress_Bar::open(count($taxset_locations));
+    $progress = Progress_Bar::open(count($locations));
 
     // Go through all entries
-    while ($entry = fgetcsv($taxsets_data_handle, 0, $TAXSETS_DATA_DELIMITER)) {
+    while ($entry = fgetcsv($sets_handle, 0, $SETS_DATA_DELIMITER)) {
 
         $sequence_file = $entry[$c_file];
         $taxset_str = $entry[$c_taxset];
         $location_key = $entry[$c_location];
 
-        if (!array_key_exists($location_key, $taxset_locations)) { continue; }
+        if (!array_key_exists($location_key, $locations)) { continue; }
 
         $progress->update(1);
 
         // Skip over taxsets smaller than the sample
+        // TODO: use the 'count' column instead
         if (count(explode($TAXSET_DELIMITER, $taxset_str)) < $subsample_size) {
-            unset($taxset_locations[$location_key]);
+            unset($locations[$location_key]);
             continue;
         }
 
         // Do the subsampling
         [$subsample_id, $subsample_file, $subsample_taxset]
-            = subsample_taxsets($subsample_size, $taxset_str, $TAXSET_DELIMITER, $sequence_file);
+            = subsample_taxset($subsample_size, $taxset_str, $TAXSET_DELIMITER, $sequence_file);
         if ($subsample_taxset === '') { 
             say("Sequences missing from subsample {$subsample_id}");
             continue; 

@@ -12,7 +12,7 @@ require_once $FUNCTION_DIR. 'say.php';
 // Return { SUCCESS:bool, DOWNLOAD_ATTEMPTED:bool }
 // If download failed, return { false, true }.
 function get_sequences($taxon, $marker) {
-    global $SEQUENCE_DATA_DELIMITER, $TAXSETS_DATA_DELIMITER;
+    global $SEQUENCE_DATA_DELIMITER, $SETS_DATA_DELIMITER;
     global $DIVISION_SCHEME;
 
     $BOLD_URL_PREFIX = 'http://www.boldsystems.org/index.php/API_Public/combined';
@@ -54,7 +54,7 @@ function get_sequences($taxon, $marker) {
     $sequence_cache_handle = fopen($sequence_file, 'w');
     $sequence_index = 0;
 
-    $sets = Sequence_Sets::open($taxon, $TAXSETS_DATA_DELIMITER);
+    $sets = Sequence_Sets::open($taxon, $SETS_DATA_DELIMITER);
     $sequence_data_header = BOLD::SEQUENCE_DATA_FIELDS;
     array_unshift($sequence_data_header, 'sequence_index', 'file');
     $sequence_data = Sequence_Data::open($taxon, $SEQUENCE_DATA_DELIMITER, $sequence_data_header);
@@ -84,7 +84,7 @@ function get_sequences($taxon, $marker) {
         fwrite($sequence_cache_handle, $sequence_header . PHP_EOL);
         fwrite($sequence_cache_handle, $seq . PHP_EOL);
 
-        // Store sequence in taxset for location
+        // Store sequence in set for location
         $sets->update_set($taxon, $entry, $sequence_index, $DIVISION_SCHEME);
 
         // update the user for big downloads

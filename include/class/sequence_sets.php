@@ -1,7 +1,7 @@
 <?php 
 
 require_once $CLASS_DIR. 'data_file.php';
-require_once $CLASS_DIR. 'taxsets.php';
+require_once $CLASS_DIR. 'sets.php';
 require_once $CLASS_DIR. 'division_scheme.php';
 require_once $FUNCTION_DIR. 'get_sequence_file.php';
 require_once $CLASS_DIR. 'location.php';
@@ -53,7 +53,7 @@ class Sequence_Sets
         bool $make_new_file = false
     ) {
         $s = new Sequence_Sets(self::get_file($taxon), $delim, $make_new_file);
-        $s->header = TAXSETS::FIELDS;
+        $s->header = SETS::FIELDS;
         if (!$s->make_new_file) {
             // get all the data that's there already
             // TODO
@@ -77,9 +77,9 @@ class Sequence_Sets
         }
 
         $start_pos = $s->data_file->tell();
-        $i_taxon = array_search(TAXSETS::TAXON, $s->header, true);
-        $i_location = array_search(TAXSETS::LOCATION, $s->header, true);
-        $i_division_scheme = array_search(TAXSETS::DIVISION_SCHEME, $s->header, true);
+        $i_taxon = array_search(SETS::TAXON, $s->header, true);
+        $i_location = array_search(SETS::LOCATION, $s->header, true);
+        $i_division_scheme = array_search(SETS::DIVISION_SCHEME, $s->header, true);
         $locations = array();
 
         do {
@@ -114,9 +114,9 @@ class Sequence_Sets
         $this->data_file = Data_File::open($this->path, $this->delim, $this->header);
 
         $start_pos = $this->data_file->tell();
-        $i_taxon = array_search(TAXSETS::TAXON, $this->header, true);
+        $i_taxon = array_search(SETS::TAXON, $this->header, true);
         if ($loc_key !== null) {
-            $i_location = array_search(TAXSETS::LOCATION, $this->header, true);
+            $i_location = array_search(SETS::LOCATION, $this->header, true);
         }
 
         $found = false;
@@ -212,7 +212,7 @@ class Sequence_Sets
         $values = array();
 
         foreach ($this->sets as $loc_key => $data) {
-            $entry = array_combine(TAXSETS::FIELDS, array(
+            $entry = array_combine(SETS::FIELDS, array(
                 $data['taxon'],
                 $this->total_sequence_count[$data['taxon']],
                 $data['location']->scheme->key,
