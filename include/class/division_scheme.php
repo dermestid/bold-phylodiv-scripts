@@ -1,11 +1,11 @@
 <?php
 
-require_once $FUNCTIONS_DIR. 'coord_grid.php';
-require_once $FUNCTIONS_DIR. 'sequence_file.php';
-require_once $FUNCTIONS_DIR. 'total_sequence_count.php';
-require_once $FUNCTIONS_DIR. 'sequence_sets.php';
-require_once $FUNCTIONS_DIR. 'sequence_data.php';
-require_once $FUNCTIONS_DIR. 'say.php';
+require_once $CLASS_DIR. 'coord_grid.php';
+require_once $FUNCTION_DIR. 'get_sequence_file.php';
+require_once $FUNCTION_DIR. 'total_sequence_count.php';
+require_once $CLASS_DIR. 'sequence_sets.php';
+require_once $CLASS_DIR. 'sequence_data.php';
+require_once $FUNCTION_DIR. 'say.php';
 
 class Division_scheme
 {
@@ -51,7 +51,7 @@ class Division_scheme
         if(!(file_exists($data_file = Sequence_Sets::get_file($taxon)))) { 
             exit("Error: non-existent {$data_file} requested by sort({$taxon})");
         }
-        if(!(file_exists($sequence_file = sequence_file($taxon)))) {
+        if(!(file_exists($sequence_file = get_sequence_file($taxon)))) {
             exit("Error: non-existent {$sequence_file} requested by sort({$taxon})");
         }
         if(!(file_exists($sequence_data_file = Sequence_Data::get_file($taxon)))) {

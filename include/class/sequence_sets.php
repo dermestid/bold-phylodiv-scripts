@@ -1,10 +1,10 @@
 <?php 
 
-require_once $FUNCTIONS_DIR. 'data_file.php';
-require_once $FUNCTIONS_DIR. 'taxsets.php';
-require_once $FUNCTIONS_DIR. 'division_scheme.php';
-require_once $FUNCTIONS_DIR. 'sequence_file.php';
-require_once $FUNCTIONS_DIR. 'location.php'; // Location class
+require_once $CLASS_DIR. 'data_file.php';
+require_once $CLASS_DIR. 'taxsets.php';
+require_once $CLASS_DIR. 'division_scheme.php';
+require_once $FUNCTION_DIR. 'get_sequence_file.php';
+require_once $CLASS_DIR. 'location.php';
 
 // Wraps Data_File management functions with additional checks
 class Sequence_Sets
@@ -218,7 +218,7 @@ class Sequence_Sets
                 $data['location']->scheme->key,
                 $loc_key,
                 $data['sequence_count'],
-                sequence_file($data['taxon']),
+                get_sequence_file($data['taxon']),
                 $data['taxset']
             ));
             $entry = array_merge($entry, $data['location']->data);

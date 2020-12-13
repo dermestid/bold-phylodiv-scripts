@@ -1,11 +1,11 @@
 <?php
 
-require_once $FUNCTIONS_DIR. 'taxsets.php';
-require_once $FUNCTIONS_DIR. 'subsample_taxsets.php';
-require_once $FUNCTIONS_DIR. 'align.php';
-require_once $FUNCTIONS_DIR. 'sequence_sets.php';
-require_once $FUNCTIONS_DIR. 'say.php';
-require_once $FUNCTIONS_DIR. 'progress_bar.php';
+require_once $CLASS_DIR. 'taxsets.php';
+require_once $FUNCTION_DIR. 'subsample_taxsets.php';
+require_once $FUNCTION_DIR. 'align.php';
+require_once $CLASS_DIR. 'sequence_sets.php';
+require_once $FUNCTION_DIR. 'say.php';
+require_once $CLASS_DIR. 'progress_bar.php';
 
 
 // Picks subsamples of $subsample_size from groups of sequences listed in given data file, aligns them,

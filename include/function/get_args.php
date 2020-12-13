@@ -1,7 +1,7 @@
 <?php
 
-require_once $FUNCTIONS_DIR. 'default_args.php';
-// require_once $FUNCTIONS_DIR. 'say.php';
+require_once $CONFIG_DIR. 'default_args.php';
+// require_once $FUNCTION_DIR. 'say.php';
 
 function get_args() {
     global $argc, $argv;
