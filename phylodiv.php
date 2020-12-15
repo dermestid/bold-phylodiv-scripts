@@ -1,25 +1,8 @@
 <?php
 
-
-$WINDOWS = (stripos(PHP_OS, 'WIN') === 0);
 $DIR = __DIR__ . DIRECTORY_SEPARATOR ;
 $INCLUDE_DIR = $DIR . 'include' . DIRECTORY_SEPARATOR;
-$FUNCTION_DIR = $INCLUDE_DIR .'function'. DIRECTORY_SEPARATOR;
-$CLASS_DIR = $INCLUDE_DIR . 'class'. DIRECTORY_SEPARATOR;
-$CONFIG_DIR = $INCLUDE_DIR. 'config'. DIRECTORY_SEPARATOR;
-$TEMPLATE_DIR = $DIR. 'template'. DIRECTORY_SEPARATOR;
-$NEXUS_DIR = $TEMPLATE_DIR. 'nexus'. DIRECTORY_SEPARATOR;
-
-require_once $CONFIG_DIR. 'constants.php';
-require_once $FUNCTION_DIR. 'say.php';
-require_once $FUNCTION_DIR. 'get_args.php';
-require_once $FUNCTION_DIR. 'init.php';
-require_once $FUNCTION_DIR. 'get_sequences.php';
-require_once $FUNCTION_DIR. 'subsample_and_align.php';
-require_once $CLASS_DIR. 'sequence_sets.php';
-require_once $FUNCTION_DIR. 'make_trees.php';
-require_once $FUNCTION_DIR. 'tree_lengths.php';
-require_once $FUNCTION_DIR. 'total_sequence_count.php';
+require_once $INCLUDE_DIR. 'require.php';
 
 get_args();
 init();
@@ -77,7 +60,7 @@ for ($i = 0; $i < $REPLICATES; $i++) {
 	// subsample_and_align takes $locations by reference and updates it to include only locations successfully subsampled
 	$aligned_subsamples = subsample_and_align($SUBSAMPLE_COUNT, $TAXON, $locations);
 
-	$tree_file = $TAXON.'_'.$i. '.tre';
+	$tree_file = $TREE_DIR. $TAXON.'_'.$i. '.tre';
 	if (!make_trees($aligned_subsamples, $tree_file)) {
 		exit('Tree construction failed.');
 	}

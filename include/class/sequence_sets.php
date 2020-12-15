@@ -44,7 +44,8 @@ class Sequence_Sets
     } 
 
     public static function get_file($taxon) {
-        return  getcwd() . DIRECTORY_SEPARATOR . $taxon . '_sets.csv';
+        global $SETS_DIR;
+        return $SETS_DIR . $taxon . '_sets.csv';
     }
 
     public static function open(

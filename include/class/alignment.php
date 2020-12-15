@@ -31,6 +31,7 @@ class Alignment {
     // where STATUS is one of the above consts, 
     // and FILE is the path to the alignment in NEXUS format
     public function get() {
+        global $KEEP_LOGS;
 
         if ($this->process->status()) {
             return array(self::STATUS_WORKING, '');
@@ -38,6 +39,9 @@ class Alignment {
             // Check file has been output successfully
             $outfile = preg_replace('/\.fas/i', '.nxs', $this->infile);
             if (file_exists($outfile) && filesize($outfile)) {
+
+                if (!$KEEP_LOGS) { unlink($this->logfile); }
+
                 return array(self::STATUS_DONE, $outfile);
             } else {
                 // diagnose from log file

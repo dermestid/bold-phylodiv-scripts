@@ -1,6 +1,7 @@
 [PAUP block]
 begin paup;
-    set autoclose=yes warntree=no warnreset=no;
+    [LOG]
+    set autoclose=yes warntree=no warnreset=no monitor=no;
     [root trees at midpoint]
     set rootmethod=midpoint;
     set outroot=monophyl;

@@ -6,8 +6,8 @@ $TAXON = '';
 
 $SUBSAMPLE_COUNT = 20;
 
-$LATITUDE_GRID_SIZE_DEG = 30;
-$LONGITUDE_GRID_SIZE_DEG = 30;
+$LAT_GRID_DEG = 30;
+$LON_GRID_DEG = 30;
 
 $CLUSTAL_PATH = '/usr/local/bin/clustalw2';
 $PAUP_PATH = '/usr/local/bin/paup';
@@ -21,8 +21,8 @@ if ($WINDOWS) {
 $ARGS = array(
     &$TAXON,
     &$SUBSAMPLE_COUNT,
-    &$LATITUDE_GRID_SIZE_DEG,
-    &$LONGITUDE_GRID_SIZE_DEG,
+    &$LAT_GRID_DEG,
+    &$LON_GRID_DEG,
     &$CLUSTAL_PATH,
     &$PAUP_PATH,
 );

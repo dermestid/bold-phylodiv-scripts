@@ -13,7 +13,7 @@ function say_line($message) {
             echo(PHP_EOL);
             $at_eol = false;
         }
-        echo($message.PHP_EOL);
+        if ($message != '') { echo($message.PHP_EOL); }
     }
 }
 
@@ -28,7 +28,7 @@ function say($message) {
 function say_lastline($message) {
     global $VERBOSITY, $output_blocked, $at_eol;
 
-    if (($VERBOSITY > VERBOSITY::NONE) && ($output_blocked === 0)) {
+    if ($VERBOSITY > VERBOSITY::NONE) {
         echo("\r".$message);
         $at_eol = true;
     }
