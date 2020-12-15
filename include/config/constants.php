@@ -11,7 +11,6 @@ $PAUP_COMMANDS_END = $NEXUS_DIR. 'paup_commands_end.txt';
 $MINIMUM_SAMPLE_COUNT = 3; // need at least 3 taxa to build trees
 $MARKER = 'COI-5P';
 
-$REPLICATES = 5;
 if ($CLI) {
     $VERBOSITY = VERBOSITY::SOME;
 } else {
