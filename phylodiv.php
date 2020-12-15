@@ -54,58 +54,51 @@ if ($OUTPUT_RESULTS) {
 	}
 }
 
-for ($i = 0; $i < $REPLICATES; $i++) {
-	$round = $i + 1;
-	say("Round {$round} of {$REPLICATES}: Creating and aligning subsamples of size {$SUBSAMPLE_COUNT}...");
-	// subsample_and_align takes $locations by reference and updates it to include only locations successfully subsampled
-	$aligned_subsamples = subsample_and_align($SUBSAMPLE_COUNT, $TAXON, $locations);
 
-	$tree_file = $TREE_DIR. $TAXON.'_'.$i. '.tre';
-	if (!make_trees($aligned_subsamples, $tree_file)) {
-		exit('Tree construction failed.');
-	}
-	$tree_lengths = tree_lengths($tree_file);
-	if ($PRINT_OUTPUT) {
-		say('Tree lengths for location subsamples: ');
-		print_r($tree_lengths);
-	}
+say("Creating and aligning subsamples of size {$SUBSAMPLE_COUNT}...");
+// subsample_and_align takes $locations by reference and updates it to include only locations successfully subsampled
+$aligned_subsamples = subsample_and_align($SUBSAMPLE_COUNT, $TAXON, $locations);
 
-	if ($OUTPUT_RESULTS) {
-		$location_cols = array();
-		foreach ($DIVISION_SCHEME->saved_params as $field) {
-			$location_cols[$field] = array_search($field, $output_header);
-		}
-		$j = 0;
-		foreach ($locations as $key => $loc) {
-			$entry = array(
-				$TAXON,
-				$MARKER,
-				total_sequence_count($TAXON),
-				$DIVISION_SCHEME->key,
-				$key,
-				$SUBSAMPLE_COUNT,
-				$tree_lengths[$j]
-			);
-			$j++;
-			$entry = array_pad($entry, $output_header_size, '');
-			// Add in the relevant location data
-			foreach ($loc->data as $field => $value) {
-				$entry[$location_cols[$field]] = $value;
-			}
-			fputcsv($output_handle, $entry, $OUTPUT_FILE_DELIMITER);
-		}
+$tree_file = $TREE_DIR. uniqid($TAXON).'.tre';
+if (!make_trees($aligned_subsamples, $tree_file)) {
+	exit('Tree construction failed.');
+}
+$tree_lengths = tree_lengths($tree_file);
+if ($PRINT_OUTPUT) {
+	say('Tree lengths for location subsamples: ');
+	print_r($tree_lengths);
+}
+if ($DELETE_TEMP_FILES) {
+	unlink($tree_file);
+}
+
+if ($OUTPUT_RESULTS) {
+	$location_cols = array();
+	foreach ($DIVISION_SCHEME->saved_params as $field) {
+		$location_cols[$field] = array_search($field, $output_header);
 	}
-} // end for loop
+	$j = 0;
+	foreach ($locations as $key => $loc) {
+		$entry = array(
+			$TAXON,
+			$MARKER,
+			total_sequence_count($TAXON),
+			$DIVISION_SCHEME->key,
+			$key,
+			$SUBSAMPLE_COUNT,
+			$tree_lengths[$j]
+		);
+		$j++;
+		$entry = array_pad($entry, $output_header_size, '');
+		// Add in the relevant location data
+		foreach ($loc->data as $field => $value) {
+			$entry[$location_cols[$field]] = $value;
+		}
+		fputcsv($output_handle, $entry, $OUTPUT_FILE_DELIMITER);
+	}
+}
 fclose($output_handle);
 
 say("Wrote tree lengths to {$OUTPUT_FILE}.");
-
-// clear up temp folder
-$temp_dir_handle = opendir($TEMP_DIR);
-do {
-	$temp_contents = readdir($temp_dir_handle);
-} while ($temp_contents == '.' || $temp_contents == '..');
-closedir($temp_dir_handle);
-if ($temp_contents === false) { rmdir($TEMP_DIR); }
 
 ?>
