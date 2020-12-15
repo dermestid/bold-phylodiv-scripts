@@ -17,8 +17,8 @@ require_once $FUNCTION_DIR. 'init.php';
 require_once $FUNCTION_DIR. 'get_sequences.php';
 require_once $CLASS_DIR. 'sequence_sets.php';
 require_once $FUNCTION_DIR. 'subsample_and_align.php';
-require_once $FUNCTION_DIR. 'make_trees.php';
-require_once $FUNCTION_DIR. 'tree_lengths.php';
+require_once $FUNCTION_DIR. 'both.php';
 require_once $FUNCTION_DIR. 'total_sequence_count.php';
+require_once $FUNCTION_DIR. 'get_tree_lengths.php';
 
 ?>

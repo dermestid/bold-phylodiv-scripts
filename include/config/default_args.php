@@ -13,7 +13,7 @@ $CLUSTAL_PATH = '/usr/local/bin/clustalw2';
 $PAUP_PATH = '/usr/local/bin/paup';
 if ($WINDOWS) {
 	$CLUSTAL_PATH = '\\"Program Files (x86)"\\ClustalW2\\clustalw2';
-	$PAUP_PATH = '%appdata%\\PAUP4\\paup4';
+	$PAUP_PATH = '%appdata%\\PAUP4\\paup';
 }
 
 // Arguments to be given to the script

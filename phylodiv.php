@@ -59,36 +59,24 @@ say("Creating and aligning subsamples of size {$SUBSAMPLE_COUNT}...");
 // subsample_and_align takes $locations by reference and updates it to include only locations successfully subsampled
 $aligned_subsamples = subsample_and_align($SUBSAMPLE_COUNT, $TAXON, $locations);
 
-$tree_file = $TREE_DIR. uniqid($TAXON).'.tre';
-if (!make_trees($aligned_subsamples, $tree_file)) {
-	exit('Tree construction failed.');
-}
-$tree_lengths = tree_lengths($tree_file);
-if ($PRINT_OUTPUT) {
-	say('Tree lengths for location subsamples: ');
-	print_r($tree_lengths);
-}
-if ($DELETE_TEMP_FILES) {
-	unlink($tree_file);
-}
-
 if ($OUTPUT_RESULTS) {
 	$location_cols = array();
 	foreach ($DIVISION_SCHEME->saved_params as $field) {
 		$location_cols[$field] = array_search($field, $output_header);
 	}
-	$j = 0;
-	foreach ($locations as $key => $loc) {
+	foreach (
+		both($locations, get_tree_lengths($aligned_subsamples)) 
+		as [$loc, $tree_len]
+	) {
 		$entry = array(
 			$TAXON,
 			$MARKER,
 			total_sequence_count($TAXON),
 			$DIVISION_SCHEME->key,
-			$key,
+			$loc->key,
 			$SUBSAMPLE_COUNT,
-			$tree_lengths[$j]
+			$tree_len,
 		);
-		$j++;
 		$entry = array_pad($entry, $output_header_size, '');
 		// Add in the relevant location data
 		foreach ($loc->data as $field => $value) {

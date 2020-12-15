@@ -13,7 +13,5 @@ $SEQUENCES_DIR = $OUT_DIR. 'sequences' .DIRECTORY_SEPARATOR;
 if (!is_dir($SEQUENCES_DIR)) { mkdir($SEQUENCES_DIR); }
 $SETS_DIR = $OUT_DIR. 'sets' .DIRECTORY_SEPARATOR;
 if (!is_dir($SETS_DIR)) { mkdir($SETS_DIR); }
-$TREE_DIR = $OUT_DIR. 'trees' .DIRECTORY_SEPARATOR;
-if (!is_dir($TREE_DIR)) { mkdir($TREE_DIR); }
 
 ?>
