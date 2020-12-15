@@ -19,8 +19,7 @@ class Progress_Bar {
         $this->max = $max_;
         $this->len = $len_;
 
-        echo("\r");
-        echo(self::START);
+        say_lastline(self::START);
     }
 
     // Not threadsafe
@@ -37,16 +36,14 @@ class Progress_Bar {
     public static function close(Progress_Bar $b) {
         global $output_blocked;
 
-        echo (PHP_EOL);
         $output_blocked--;
+        say_line('');
         unset($b);
     }
 
-    // Not threadsafe if used on the same object. TODO: make this atomic
+    // Not threadsafe if used on the same object. TODO: make this threadsafe
     public function update($increment) {
 
-        echo("\r"); // Rewrite last line: depends on terminal behaviour, and hope that we didn't add a new line!
-       
         $this->val += $increment / $this->max;
         $this->val = min($this->val, 1.0);
 
@@ -59,7 +56,7 @@ class Progress_Bar {
             $out .= ' '.ceil(100*$this->val).'%';
         }
 
-        echo($out);
+        say_lastline($out);
     }
 }
 

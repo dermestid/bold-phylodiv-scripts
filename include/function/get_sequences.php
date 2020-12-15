@@ -29,11 +29,13 @@ function get_sequences($taxon, $marker) {
         // The third condition above can be removed only once total_sequence_count is completed
     ) {
         return array(true, false);
-    } else if (file_exists($data_file)) {
-        exit ("File mismatch: metadata file {$data_file} but no {$sequence_file}");
-    } else if (file_exists($sequence_file)) {
-        exit ("File mismatch: sequence file {$sequence_file} but no {$data_file}");
-    } else if (file_exists($sets_file)) {
+    }
+    
+    if (file_exists($data_file)) {
+        // Delete it, since it's outdated
+        unlink($data_file);
+    }
+    if (file_exists($sets_file)) {
         // Delete it, since it's outdated
         unlink($sets_file);
     }

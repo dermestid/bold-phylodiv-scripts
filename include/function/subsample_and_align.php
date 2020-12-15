@@ -87,11 +87,11 @@ function subsample_and_align($subsample_size, $taxon, &$locations) {
                     unlink($alignment->get_input_file());
                 }
                 $progress->update(1);
-                unset($alignment);
+                unset($alignments[$loc]);
             } else {
                 say('Alignment failed for subsample in '.$loc);
                 $progress->update(1);
-                unset($alignment);
+                unset($alignments[$loc]);
             }
         }
     } while(!$alignment_completed);
