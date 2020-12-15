@@ -17,10 +17,9 @@ if ($CLI) {
     $VERBOSITY = VERBOSITY::NONE;
 }
 
-
+$SAVE_TREES = false;
 $DELETE_TEMP_FILES = true;
 $KEEP_LOGS = false;
-$PRINT_OUTPUT = false;
 $OUTPUT_RESULTS = true;
 $OUTPUT_FILE = $OUT_DIR. 'results.csv';
 $OUTPUT_FILE_DELIMITER = ',';

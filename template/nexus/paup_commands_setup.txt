@@ -1,7 +1,9 @@
 [PAUP block]
 begin paup;
     [LOG]
-    set autoclose=yes warntree=no warnreset=no monitor=no;
+    set monitor=no autoclose=yes warntree=no warnreset=no warnTSave=no;
+    [force branch lengths to be at least zero]
+    dset NegBrLen=Prohibit;
     [root trees at midpoint]
     set rootmethod=midpoint;
     set outroot=monophyl;
