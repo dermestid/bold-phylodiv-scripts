@@ -1,6 +1,7 @@
 <?php
 
 require_once $FUNCTION_DIR. 'get_sequence_file.php';
+require_once $FUNCTION_DIR. 'get_bold_record_count.php';
 require_once $FUNCTION_DIR. 'make_fasta_header.php';
 require_once $CLASS_DIR. 'sequence_data.php';
 require_once $CLASS_DIR. 'sequence_sets.php';
@@ -14,6 +15,9 @@ require_once $FUNCTION_DIR. 'say.php';
 function get_sequences($taxon, $marker) {
     global $SEQUENCE_DATA_DELIMITER, $SETS_DATA_DELIMITER;
     global $DIVISION_SCHEME;
+
+    // First check for invalid taxon
+    if (get_bold_record_count($taxon) === 0) return array(false, true);
 
     $BOLD_URL_PREFIX = 'http://www.boldsystems.org/index.php/API_Public/combined';
     $SEQUENCE_SOURCE_FORMAT = 'tsv';
