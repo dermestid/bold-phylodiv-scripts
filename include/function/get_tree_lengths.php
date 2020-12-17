@@ -1,5 +1,7 @@
 <?php
 
+require_once $FUNCTION_DIR. 'say.php';
+
 // given $alignments in NEXUS format, specifying a series of DATA blocks of aligned sequences,
 // calls PAUP to generate a tree for each data block, and return their lengths as a generator.
 function get_tree_lengths(string $alignments) {

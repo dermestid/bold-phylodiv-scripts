@@ -7,7 +7,7 @@ require_once $CLASS_DIR. 'sequence_sets.php';
 require_once $CLASS_DIR. 'sequence_data.php';
 require_once $FUNCTION_DIR. 'say.php';
 
-class Division_scheme
+class Division_Scheme
 {
     const COORDS = 'COORDS';
     const COUNTRY = 'COUNTRY';
