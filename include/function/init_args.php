@@ -8,7 +8,7 @@ $COORD_GRID;
 $DIVISION_SCHEME;
     
 // set argument-dependent global variables
-function init() {
+function init_args() {
     global $COORD_GRID, $DIVISION_SCHEME;
     global $LAT_GRID_DEG, $LON_GRID_DEG;
 
@@ -17,7 +17,7 @@ function init() {
         Coord_Grid::SIZE_LAT => $LAT_GRID_DEG,
         Coord_Grid::SIZE_LON => $LON_GRID_DEG
     );
-    $DIVISION_SCHEME = new Division_scheme(Division_scheme::COORDS, array(BOLD::LATITUDE, BOLD::LONGITUDE));
+    $DIVISION_SCHEME = new Division_Scheme(Division_Scheme::COORDS, array(BOLD::LATITUDE, BOLD::LONGITUDE));
 }
 
 ?>

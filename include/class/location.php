@@ -69,7 +69,7 @@ class Location
 		$lon_max = $lon_min + $size_lon;
         $grid_lon = $lon_min . 'to' . $lon_max;
         
-        $d = array_combine(Division_scheme::COORD_PARAMS, array(
+        $d = array_combine(Division_Scheme::COORD_PARAMS, array(
             $lat_min, $lat_max, ($lat_min + $lat_max)/2.0,
             $lon_min, $lon_max, ($lon_min + $lon_max)/2.0
         ));
