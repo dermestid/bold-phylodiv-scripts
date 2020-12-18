@@ -4,7 +4,9 @@ $APP_NAME = 'bold-phylodiv-scripts';
 $WINDOWS = (stripos(PHP_OS, 'WIN') === 0);
 $CLI = (stripos(PHP_SAPI, 'cli') === 0);
 
-$OUT_DIR = getcwd() . DIRECTORY_SEPARATOR . 'out' . DIRECTORY_SEPARATOR;
+if ($CLI) $wd = getcwd(); else $wd = realpath(__DIR__.'/../../');
+
+$OUT_DIR = $wd . DIRECTORY_SEPARATOR . 'out' . DIRECTORY_SEPARATOR;
 if (!is_dir($OUT_DIR)) { mkdir($OUT_DIR); }
 $TEMP_DIR = $OUT_DIR. 'temp' .DIRECTORY_SEPARATOR; 
 if (!is_dir($TEMP_DIR)) { mkdir($TEMP_DIR); }

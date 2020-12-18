@@ -13,7 +13,7 @@ function total_sequence_count($taxon) {
     if ($count === false) {
         // count up all the sequences in the file
         // TODO
-        exit("Unimplemented total_sequence_count({$taxon}) requested.");
+        exit("Error: Unimplemented total_sequence_count({$taxon}) requested.");
     } else {
         return intval($count);
     }

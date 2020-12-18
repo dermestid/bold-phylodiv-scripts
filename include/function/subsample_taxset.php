@@ -49,8 +49,7 @@ function subsample_taxset($subsample_size, $taxset_str, $taxset_delimiter, $sequ
 
     if ($i < $subsample_size) {
         // something was missing!
-        exit('missing sequences in sample');
-        return array('','','');
+        exit('Error: missing sequences in sample');
     }
 
     return array($subsample_id, $subsample_file, $subsample_str);
