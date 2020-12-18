@@ -37,7 +37,10 @@ function get_cli_args(&$args = null) {
 function get_url_args(&$args = null) {
     global $TAXON, $SUBSAMPLE_COUNT, $LAT_GRID_DEG, $LON_GRID_DEG;
 
-    if(!isset($_GET['taxon'])) exit ("Taxon argument not given");
+    if(!isset($_GET['taxon'])) {
+        Status::arg_missing('taxon');
+        exit;
+    }
 
     $taxon = $_GET['taxon'];
     $bad_chars = '/[^- a-zA-Z]/'; // everything but hyphen, space, letters

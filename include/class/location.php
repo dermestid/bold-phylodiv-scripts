@@ -34,17 +34,17 @@ class Location
         } else if ($scheme_->scheme === division_scheme::COUNTRY) {
             [$loc->data, $loc->key] = self::setup_country($scheme_, $entry);
         } else {
-            exit("Unimplemented division_scheme {$scheme_->scheme} requested in Location::read()");
+            exit("Error: Unimplemented division_scheme {$scheme_->scheme} requested in Location::read()");
         }
         return $loc;
     }
 
     private static function setup_coords($scheme_, $entry) {
         if (array_search(BOLD::LATITUDE, $scheme_->bold_params) === false) {
-            exit("division_scheme {$scheme_->key} set up wrong; Location::read() expected param ".BOLD::LATITUDE);
+            exit("Error: division_scheme {$scheme_->key} set up wrong; Location::read() expected param ".BOLD::LATITUDE);
         }
         if (array_search(BOLD::LONGITUDE, $scheme_->bold_params) === false) {
-            exit("division_scheme {$scheme_->key} set up wrong; Location::read() expected param ".BOLD::LONGITUDE);
+            exit("Error: division_scheme {$scheme_->key} set up wrong; Location::read() expected param ".BOLD::LONGITUDE);
         }
 
         if (!key_exists(BOLD::LATITUDE, $entry) || $entry[BOLD::LATITUDE] == '') {

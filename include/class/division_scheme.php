@@ -37,7 +37,7 @@ class Division_Scheme
             [$this->key, $this->arg_data] = self::setup_country();
             $this->saved_params = array(self::COUNTRY);
         } else {
-            exit ('Unimplemented location division scheme requested');
+            exit('Unimplemented location division scheme requested');
         }
     }
 

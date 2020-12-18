@@ -56,7 +56,9 @@ function get_sequences($taxon, $marker) {
         download_sequences($taxon, $marker);
     else {
         $pid = Download::new($ARGS);
-        Status::downloading($pid);
+        $next_args = $_GET;
+        $next_args['pid'] = $pid;
+        Status::downloading($next_args);
         exit;
     }
         
