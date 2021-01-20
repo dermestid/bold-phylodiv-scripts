@@ -33,23 +33,6 @@ class BOLD
 	const REGION = 'region';
 	const SECTOR = 'sector';
 	const EXACT_SITE = 'exactsite';
-	const SEQUENCE_DATA_FIELDS = array(
-		self::MARKER_CODE, self::PROCESS_ID, self::SPECIES_NAME, self::GENUS_NAME,
-		self::INSTITUTION, self::COLLECTION_EVENT_ID, self::COLLECION_DATE_START, 
-		self::COLLECTION_DATE_END, self::COLLECTION_TIME, self::COLLECTION_NOTE, 
-		self::SITE_CODE, self::SAMPLING_PROTOCOL, self::HABITAT, self::NOTES, 
-		self::LATITUDE, self::LONGITUDE, self::COORD_SOURCE, self::COORD_ACCURACY, 
-		self::ELEVATION, self::DEPTH, self::ELEVATION_ACCURACY, self::DEPTH_ACCURACY, 
-		self::COUNTRY, self::PROVINCE_STATE, self::REGION, self::SECTOR, self::EXACT_SITE
-	);
-	const LOCATION_FIELDS = array(
-		self::INSTITUTION, self::COLLECTION_EVENT_ID, self::COLLECION_DATE_START, 
-		self::COLLECTION_DATE_END, self::COLLECTION_TIME, self::COLLECTION_NOTE, 
-		self::SITE_CODE, self::SAMPLING_PROTOCOL, self::HABITAT, self::NOTES, 
-		self::LATITUDE, self::LONGITUDE, self::COORD_SOURCE, self::COORD_ACCURACY, 
-		self::ELEVATION, self::DEPTH, self::ELEVATION_ACCURACY, self::DEPTH_ACCURACY, 
-		self::COUNTRY, self::PROVINCE_STATE, self::REGION, self::SECTOR, self::EXACT_SITE
-	);
 }
 
 ?>

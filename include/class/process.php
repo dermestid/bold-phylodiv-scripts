@@ -1,32 +1,33 @@
 <?php
 
-require_once $CONFIG_DIR. 'setup.php'; // $TEMP_DIR, $WINDOWS, $CLI, $APP_NAME
+require_once '../include/config/global.php'; // $WINDOWS, $CLI, $APP_NAME
 
 // adapted from code of user Peec / dell_petter at hotmail dot com
 // at https://www.php.net/manual/en/function.exec.php#88704
 class Process{
+    const TEMP_DIR = 'temp/';
+
     private int $pid;
     private string $command;
     private string $temp_out;
 
-    public function __construct(string $command, $outfile = null){
-        global $TEMP_DIR;
+    public function __construct(string $command, string $outfile = ''){
 
         do {
-            $this->temp_out = $TEMP_DIR.uniqid('proc');
+            $this->temp_out = self::TEMP_DIR . uniqid('proc');
         } while(file_exists($this->temp_out));
 
         $this->command = $command;
 
         $this->run($outfile);
     }
-    private function run($outfile = null){
+    private function run(string $outfile = ''){
         global $WINDOWS;
 
-        if ($outfile === null)
+        if ($outfile === '')
             $outfile = $this->temp_out;
         
-        $spec = array(1 => array('file', $outfile, 'w'));
+        $spec = [1 => ['file', $outfile, 'w']];
 
         if ($WINDOWS) {
             $proc = proc_open('start /b '.$this->command, $spec, $pipes);
@@ -56,12 +57,12 @@ class Process{
     }
 
     public static function get_status($pid) {
-        global $TEMP_DIR, $WINDOWS;
+        global $WINDOWS;
 
         // Clear the temp files
         self::clear_temp_proc();
 
-        $op = array();
+        $op = [];
         if ($WINDOWS) {
             $command = "tasklist /FI \"PID eq {$pid}\"";
             exec($command, $op);
@@ -92,20 +93,7 @@ class Process{
     }
 
     private static function clear_temp_proc() {
-        global $CLI, $TEMP_DIR, $APP_NAME;
-
-        if ($CLI)
-            array_map('unlink', glob("{$TEMP_DIR}proc*"));
-        else {
-            // On web, we cannot glob filesystem with complete paths.
-            // Get the current app-relative path from the request URI,
-            // then get the relative path from here to the temp dir.
-            $called_url = $_SERVER['REQUEST_URI'];
-            $called_app_path = explode($APP_NAME, $called_url, 2)[1];
-            $dir_depth = substr_count($called_app_path, '/') - 1;
-            $temp_path = str_repeat('../', $dir_depth).'out/temp/';
-            array_map('unlink', glob("{$temp_path}proc*"));
-        } 
+        array_map('unlink', glob(self::TEMP_DIR."proc*"));
     }
 }
 ?>

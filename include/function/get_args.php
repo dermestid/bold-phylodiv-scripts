@@ -1,63 +1,28 @@
 <?php
 
-require_once $CONFIG_DIR. 'setup.php'; // $CLI
-require_once $CONFIG_DIR. 'default_args.php';
-require_once $FUNCTION_DIR. 'init_args.php';
-require_once $CLASS_DIR. 'status.php';
-
-function get_args() {
-    global $CLI;
-
-    if ($CLI)
-        get_cli_args();
-    else
-        get_url_args();
-
-    init_args();
-}
-
-function get_cli_args(&$args = null) {
+// expects an associative array
+// for CLI, the values of $args will be populated with values of $argc excluding the first
+// else, $args is replaced by filtered GET input,
+// treating the initial values of $args as the $options argument to filter_input_array
+// (see php manual)
+//
+// returns false if could not get all the args requested, otherwise true
+function get_args(array &$args) {
     global $argc, $argv;
-    global $ARGS;
 
-    if ($args === null) $args = $ARGS;
+    $CLI = (stripos(PHP_SAPI, 'cli') === 0);
 
-    if(!isset($argc)) exit("argc and argv disabled");
-    if($argc - 1 > count($args)) exit("Wrong number of arguments given");
-    if($argc <= 1) exit("No arguments given");
-
-    $i = 1;
-    foreach ($args as $k => &$v) {
-        if ($i >= $argc) break;
-        $v = $argv[$i];
-        $i++;
+    if ($CLI) {
+        $cli_arg = 1;
+        foreach ($args as &$value) {
+            if ($cli_arg >= $argc) return false;
+            $value = $argv[$cli_arg];
+            $cli_arg++;
+        }
+    } else {
+        $args = filter_input_array(INPUT_GET, $args);
     }
-}
-
-function get_url_args(&$args = null) {
-    global $TAXON, $SUBSAMPLE_COUNT, $LAT_GRID_DEG, $LON_GRID_DEG;
-
-    if(!isset($_GET['taxon'])) {
-        Status::arg_missing('taxon');
-        exit;
-    }
-
-    $taxon = $_GET['taxon'];
-    $bad_chars = '/[^- a-zA-Z]/'; // everything but hyphen, space, letters
-    $TAXON = rawurlencode(preg_replace($bad_chars, '', $taxon));
-
-    if (isset($_GET['subs'])) $SUBSAMPLE_COUNT = intval($_GET['subs']);
-    if (isset($_GET['lat_grid'])) $LAT_GRID_DEG = floatval($_GET['lat_grid']);
-    if (isset($_GET['lon_grid'])) $LON_GRID_DEG = floatval($_GET['lon_grid']);
-
-    if ($args !== null)
-        $args = array(
-            'taxon' => $TAXON, 
-            'subs' => $SUBSAMPLE_COUNT, 
-            'lat_grid' => $LAT_GRID_DEG, 
-            'lon_grid' => $LON_GRID_DEG);
-
-    // Clustal/PAUP path is server business, not user input!
+    return ($args !== false);
 }
 
 ?>

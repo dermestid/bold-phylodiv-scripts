@@ -1,7 +1,6 @@
 <?php
 
-require_once $FUNCTION_DIR. 'say.php';
-require_once $CLASS_DIR. 'process.php';
+require_once '../include/class/process.php';
 
 // groups functions for asynchronously aligning
 class Alignment {
@@ -9,18 +8,26 @@ class Alignment {
     private Process $process;
     private string $infile;
     private string $logfile;
+    private bool $keep_logs;
 
-    public function __construct(string $infile_, string $logfile_) {
+    public function __construct(string $infile, string $logfile = '') {
         global $CLUSTAL_PATH;
         
-        $this->infile = $infile_;
-        $this->logfile = $logfile_;
-        say_verbose("Aligning sequences in {$infile_}...");
+        $this->infile = $infile;
+        if ($logfile === '') {
+            $this->keep_logs = false;
+            do {
+                $this->logfile = uniqid().'.log';
+            } while (file_exists($this->logfile));
+        } else {
+            $this->logfile = $logfile;
+            $this->keep_logs = true;
+        }
     
         $command = $CLUSTAL_PATH 
-        . ' -INFILE=' . $infile_ 
+        . ' -INFILE=' . $infile 
         . ' -QUICKTREE -OUTORDER=INPUT -OUTPUT=NEXUS' ;
-        $this->process = new Process($command, $logfile_);
+        $this->process = new Process($command, $this->logfile);
     }
 
     const STATUS_FAIL = 0;
@@ -31,26 +38,26 @@ class Alignment {
     // where STATUS is one of the above consts, 
     // and FILE is the path to the alignment in NEXUS format
     public function get() {
-        global $KEEP_LOGS;
 
         if ($this->process->status()) {
-            return array(self::STATUS_WORKING, '');
+            return [self::STATUS_WORKING, ''];
         } else {
             // Check file has been output successfully
             $outfile = preg_replace('/\.fas/i', '.nxs', $this->infile);
             if (file_exists($outfile) && filesize($outfile)) {
 
-                if (!$KEEP_LOGS) { unlink($this->logfile); }
+                if (!$this->keep_logs) { unlink($this->logfile); }
 
-                return array(self::STATUS_DONE, $outfile);
+                return [self::STATUS_DONE, $outfile];
             } else {
                 // diagnose from log file
                 $log = file_get_contents($this->logfile);
                 if (preg_match('/Only 1 sequence/i', $log)) {
-                    say_verbose('Only one sequence given, cannot align.');
+                    // throw an exception?
+                    echo 'Only one sequence'.PHP_EOL;
                 }
         
-                return array(self::STATUS_FAIL, '');
+                return [self::STATUS_FAIL, ''];
             }
         }
     }
