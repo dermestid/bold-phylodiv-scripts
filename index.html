@@ -20,30 +20,88 @@
         }
     </style>
 
-    <script type="text/javascript" src="js/draw_map.js"></script>
-    <script type="text/javascript" src="js/make_geojson.js"></script>
-    <script type="text/javascript" src="js/get_tree_lengths.js"></script>
-    <script type="text/javascript" src="js/draw_species_map.js"></script>
-    <script type="text/javascript" src="js/pd_colour.js"></script>
-    <script type="text/javascript" src="js/draw_pd_map.js"></script>
-    <script type="text/javascript" src="js/present_pd.js"></script>
+    <script type="module" src="js/page_setup.js"></script>
 </head>
 
 <body>
     <h1>Phylogenetic Diversity by Location</h1>
-    <div id="request_form">
-        <label for="taxon">Taxon: </label>
-        <input type="text" id="taxon" placeholder="Lachninae"><br>
-        <label for="subs">Subsample size: </label>
-        <input type="number" id="subs" min="3" max="1000" step="1" value="10"><br>
-        <label for="lat_grid">Latitude grid size: </label>
-        <input type="number" id="lat_grid" min="0" max="180" value="10"><br>
-        <label for="lon_grid">Longitude grid size: </label>
-        <input type="number" id="lon_grid" min="0" max="90" value="10"><br>
-        <input type="button" value="Submit" onclick="present_pd()">
+    <div id="introduction">
+        <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempora at aliquam voluptatem debitis, voluptas
+            asperiores exercitationem, odit neque inventore voluptatibus ipsa qui id, nostrum et magnam commodi
+            voluptates reiciendis vel!
+        </p>
     </div>
-    <div id="map" class="map"></div>
-    <div id="result"></div>
+    <div id="input">
+        <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Qui, non illo placeat, ab eos temporibus nam magni
+            iusto veritatis modi in similique! Blanditiis error quos repellendus autem, quod doloremque minima.
+        </p>
+        <fieldset>
+            <legend>Sequence source:</legend>
+            <input id="saved_sequences_choice" name="sequence_source" type="radio" value="saved" checked>
+            <label for="saved_sequences_choice">use sequences already saved</label><br>
+            <input id="download_sequences_choice" name="sequence_source" type="radio" value="download">
+            <label for="download_sequences_choice">download new sequences</label>
+        </fieldset>
+        <div id="saved_sequences_select">
+            <fieldset>
+                <legend>Saved sequences:</legend>
+                <label for="saved_taxa">select a taxon:</label><br>
+                <select id="saved_taxa" size="3">
+                </select>
+            </fieldset>
+        </div>
+        <div id="download_sequences_form">
+            <fieldset>
+                <legend>Download sequences:</legend>
+                <label for="taxon">Taxon: </label>
+                <input type="text" id="taxon"><br>
+            </fieldset>
+        </div>
+        <form id="get_pd">
+            <fieldset>
+                <legend>Location divisions:</legend>
+                <label for="lat_grid">Latitude grid size: </label>
+                <input type="number" id="lat_grid" min="0.5" max="180" value="10" step="0.5"><br>
+                <label for="lon_grid">Longitude grid size: </label>
+                <input type="number" id="lon_grid" min="0.5" max="90" value="10" step="0.5">
+            </fieldset>
+            <fieldset>
+                <legend>Sampling:</legend>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero nemo voluptatum ut pariatur ad earum
+                    porro quas repellat! Voluptates voluptatem ipsum necessitatibus dolorem ullam rerum earum dolore
+                    molestiae, culpa qui?</p>
+                <input id="downsample_choice" name="sample_type" type="radio" value="downsample" checked>
+                <label for="downsample_choice">Downsample to fixed sample size</label><br>
+                <!-- unimplemented 
+                <input id="rarefy_choice" name="sample_type" type="radio" value="rarefy">
+                <label for="rarefy_choice">Extrapolate or rarefy to predict phylogenetic diversity</label><br>
+                -->
+                <label for="subs">Subsample size: </label>
+                <input type="number" id="subs" min="3" max="100" step="1" value="10"><br>
+            </fieldset>
+            <input type="submit" value="Calculate phylogenetic diversity">
+        </form>
+    </div>
+    <div id="plot">
+        <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione, aspernatur natus est quae, dignissimos
+            libero
+            magnam nihil corporis perspiciatis soluta nemo voluptatum. Autem nesciunt vero officia cumque natus odit
+            provident.
+        </p>
+        <div id="map" class="map"></div>
+    </div>
+    <div id="result">
+        <p>Progress log:
+            <input type="button" id="show_result" value="show">
+            <input type="button" id="hide_result" value="hide">
+        </p>
+        <div id="result_container">
+
+        </div>
+    </div>
 </body>
 
 </html>

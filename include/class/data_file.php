@@ -8,43 +8,43 @@ class Data_File
     private string $delim;
     private array $header;
 
-    private function __construct(string $path_, string $delim_) {
-        $this->path = $path_;
-        $this->delim = $delim_;
+    private function __construct(string $path, string $delim) {
+        $this->path = $path;
+        $this->delim = $delim;
     }
 
     // Opens a data file for reading and writing
     // Creates it if it does not yet exist
-    // Returns a Data_File object, or false if could not open $path_
-    // $delim_ will be used as the data entry delimiter for this file
-    // Any values in &$header_ that are not yet columns in the header of the file will be added
-    // &$header_ will be updated to contain all the column names currently in the header
+    // Returns a Data_File object, or false if could not open $path
+    // $delim will be used as the data entry delimiter for this file
+    // Any values in &$header that are not yet columns in the header of the file will be added
+    // &$header will be updated to contain all the column names currently in the header
     public static function open(
-        string $path_, 
-        string $delim_, 
-        array &$header_ = array(),
-        bool $append = true
+        string $path, 
+        string $delim, 
+        bool $append = true,
+        array &$header = []
     ) {
 
-        $is_new_file = !file_exists($path_);
+        $is_new_file = !file_exists($path);
 
         if ($is_new_file) {
-            return self::open_new($path_, $delim_, $header_);
+            return self::open_new($path, $delim, $header);
         } else {
-            $data_file = new Data_File($path_, $delim_);
-            $data_file->handle = fopen($path_, 'r+');
+            $data_file = new Data_File($path, $delim);
+            $data_file->handle = fopen($path, 'r+');
             if ($data_file->handle === false) { return false; }
 
             $new_header = fgetcsv($data_file->handle, 0, $data_file->delim);
             // Add any fields to the header which aren't yet present
             $new_fields = false;
-            foreach ($header_ as $field) {
+            foreach ($header as $field) {
                 if (!in_array($field, $new_header, true)) {
-                    array_push($new_header, $field);
+                    $new_header[] = $field;
                     $new_fields = true;
                 }
             }
-            $header_ = $new_header;
+            $header = $new_header;
             $data_file->header = $new_header;
 
             // Update the header if needed
@@ -63,15 +63,15 @@ class Data_File
     }
 
     // Opens a data file for reading and writing, truncating it to empty if it already exists
-    // Returns a Data_File object, or false if could not open $path_
-    // $delim_ will be used as the data entry delimiter for this file
-    // $header_ will be used as column names to write a fresh header
-    public static function open_new(string $path_, string $delim_, array $header_) {
-        $data_file = new Data_File($path_, $delim_);
-        $data_file->handle = fopen($path_, 'w+');
+    // Returns a Data_File object, or false if could not open $path
+    // $delim will be used as the data entry delimiter for this file
+    // $header will be used as column names to write a fresh header
+    public static function open_new(string $path, string $delim, array $header) {
+        $data_file = new Data_File($path, $delim);
+        $data_file->handle = fopen($path, 'w+');
         if ($data_file->handle === false) { return false; }
 
-        $data_file->header = $header_;
+        $data_file->header = $header;
         fputcsv($data_file->handle, $data_file->header, $data_file->delim);
 
         return $data_file;
@@ -87,6 +87,10 @@ class Data_File
         return fgetcsv($this->handle, 0, $this->delim);
     }
 
+    public function get_header() {
+        return $this->header;
+    }
+
     public function tell() {
         return ftell($this->handle);
     }
@@ -99,7 +103,7 @@ class Data_File
 
     // Adds a new entry to the file
     // Returns false if writing failed
-    // $entry should be a numeric array of values to write, of equal length to $this->header
+    // $entry should be an indexed array of values to write, of equal length to $this->header
     public function write_entry(array $entry) {
         $this->write_entry_assoc(array_combine($this->header, $entry));
     }
@@ -111,9 +115,7 @@ class Data_File
     // and any values of $entry with keys not in $this->header will be ignored
     public function write_entry_assoc(array $entry) {
         // Make sure fields are in the expected order
-        $entry_shuffle = function ($col) use ($entry) {
-            return $entry[$col]; };
-        $entry = array_map($entry_shuffle, $this->header);
+        $entry = array_map(fn ($col) => $entry[$col], $this->header);
 
         fputcsv($this->handle, $entry, $this->delim);
     }
