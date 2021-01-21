@@ -1,0 +1,3 @@
+[submodule "sse.js"]
+	path = sse.js
+	url = https://github.com/mpetazzoni/sse.js

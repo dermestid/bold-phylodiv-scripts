@@ -14,6 +14,7 @@ require_once '../include/function/stream_exit.php';
 require_once '../include/function/get_args.php';
 require_once '../include/function/get_gbif_stats_g.php';
 require_once '../include/class/division_scheme.php';
+require_once '../include/class/division_scheme_subset.php';
 require_once '../include/function/make_geojson.php';
 
 set_time_limit(300);
@@ -29,14 +30,22 @@ $CLI = (stripos(PHP_SAPI, 'cli') === 0);
 
 $args = [
     'taxon' => FILTER_SANITIZE_ENCODED,
+    'subset' => FILTER_VALIDATE_BOOLEAN,
     'division_scheme_key' => FILTER_SANITIZE_STRING
 ];
-if(!get_args($args)) stream_exit('incorrect args', $CLI);
-
-$HILL_ORDER = 0;
-
+if (!get_args($args)) stream_exit('incorrect args', $CLI);
 $scheme = Division_Scheme::read($args['division_scheme_key']);
 if ($scheme === false) stream_exit('incorrect division scheme key', $CLI);
+
+if ($args['subset']) {
+    $arg_loc = ['locations' => FILTER_SANITIZE_STRING];
+    if (!get_args($arg_loc, 3)) stream_exit('incorrect args', $CLI);
+    $loc_str = $arg_loc['locations'];
+    $scheme = Division_Scheme_Subset::get($scheme, $loc_str);
+    if ($scheme === false) stream_exit('incorrect division scheme key', $CLI);
+}
+
+$HILL_ORDER = 0;
 
 $geojson_ar = [];
 foreach (get_gbif_stats_g($args['taxon'], $scheme, $HILL_ORDER) as $res) {
