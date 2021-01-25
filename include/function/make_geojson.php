@@ -11,7 +11,8 @@ function make_geojson(array $result, string $field) {
                 [$loc['lon_min'], $loc['lat_max']],
                 [$loc['lon_max'], $loc['lat_max']],
                 [$loc['lon_max'], $loc['lat_min']],
-                [$loc['lon_min'], $loc['lat_min']]]]]];
+                [$loc['lon_min'], $loc['lat_min']],
+                [$loc['lon_min'], $loc['lat_max']]]]]];
 }
 
 ?>

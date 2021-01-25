@@ -1,33 +1,16 @@
-import pd_colour from "./pd_colour.js";
+import pick_colour from "./pick_colour.js";
 
-export default function map_pd(results, map) {
-
-    L.geoJSON(results, {
-        style: function (feature) {
-            var style = {
-                color: pd_colour(feature.properties.pd),
-                weight: 2,
-                fillOpacity: 0.85,
-                stroke: false
-            };
-            return style;
-        }
-    }).addTo(map);
-}
-
-function handle_results(results) {
-    // Make a table of results
-    $("#result").html("<table id=\"result_table\"></table>");
-    $("#result_table").prepend("<tr id=\"result_table_head\"></tr>");
-    Object.keys(results[0]).forEach(function (item) {
-        $("#result_table_head").append(`<th>${item}</th>`);
-    });
-    results.forEach(function (item, index) {
-        $("#result_table").append(`<tr id="${index}"></tr>`);
-        Object.keys(item).forEach(function (field) {
-            if (field == "subsample_tree_length")
-                item[field] += " " + pd_colour(item[field]);
-            $(`#${index}`).append(`<td>${item[field]}</td>`);
-        });
-    });
+export default function map_pd(pd_fc, svg, path, continuation) {
+    svg.selectAll(".data")
+        .remove();
+    svg.insert("g", "#borders")
+        .attr("id", "pd")
+        .attr("class", "data")
+        .selectAll("path")
+        .data(pd_fc.features)
+        .enter()
+        .append("path")
+        .attr("fill", f => pick_colour(f, pd_fc, x => x.properties.pd))
+        .attr("d", path);
+    return continuation(pd_fc);
 }
