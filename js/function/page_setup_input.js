@@ -1,9 +1,9 @@
 export default function page_setup_input() {
-    var plot_div = $("#plot");
-    var input_div = $("#input");
-    var get_saved_taxa_script = "script/saved_taxa.php";
-    var saved_taxa_select = $("#saved_taxa");
-    var saved_taxa_option = function (entry) {
+    const plot_div = $("#plot");
+    const input_div = $("#input");
+    const get_saved_taxa_script = "script/saved_taxa.php";
+    const saved_taxa_select = $("#saved_taxa");
+    const saved_taxa_option = function (entry) {
         return `<option value="${entry}">${entry}</option>`;
     };
 

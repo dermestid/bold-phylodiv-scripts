@@ -18,11 +18,6 @@ class Division_Scheme_Subset extends Division_Scheme_Coord
             ), 
             explode('_', $loc_str)
         );
-        $a = json_encode($rects);
-        system("start echo $a");
-        // $rects = explode('_', $loc_str);
-        // $rects = array_map(fn($rect) => explode('/', $rect), $rects);
-        // $rects = array_map(fn($rect) => [explode(',',$rect[0]), explode(',', $rect[0])], $rects);
         if (count($rects[0]) !== 2) return false;
         else return new Division_Scheme_Subset($super, $rects, $loc_str);
     }

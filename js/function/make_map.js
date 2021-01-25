@@ -1,17 +1,44 @@
-export default function make_map(map_div_id) {
-    var pixel_ratio = parseInt(window.devicePixelRatio) || 1;
-    var max_zoom = 16;
-    var tile_size = 512;
+export default function make_map() {
 
-    map = L.map(map_div_id).setView([0, 0], 1);
+    const width = 800;
+    const height = 400;
+    const svg = d3.select("body").append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-    L.tileLayer('https://tile.gbif.org/3857/omt/{z}/{x}/{y}@{r}x.png?style=gbif-classic'.replace('{r}', pixel_ratio), {
-        minZoom: 1,
-        maxZoom: max_zoom + 1,
-        zoomOffset: -1,
-        tileSize: tile_size
-    }).addTo(map);
+    const projection = d3.geoEqualEarth()
+        .translate([width / 2, height / 2])
+        .scale([144])
+        .rotate([-10, 0]);
 
-    return map;
+    const path = d3.geoPath().projection(projection);
+
+    svg.append("path")
+        .attr("id", "outline")
+        .attr("d", path({ type: "Sphere" }))
+        .attr("fill", "none")
+        .attr("stroke", "black");
+
+    $.getJSON("countries-50m.json", world => {
+        svg.insert("g", "#outline")
+            .attr("id", "map")
+            .selectAll('path')
+            .data(topojson.feature(world, world.objects.land).features)
+            .enter()
+            .append('path')
+            .attr("d", path)
+            .attr("fill", "lightgray");
+        svg.insert("g", "#outline")
+            .attr("id", "borders")
+            .append("path")
+            .datum(topojson.mesh(world, world.objects.countries))
+            .attr("fill", "none")
+            .attr("stroke", "white")
+            .attr("stroke-opacity", 0.7)
+            .attr("stroke-linejoin", "round")
+            .attr("d", path);
+    });
+
+    return [svg, path];
 }
 
