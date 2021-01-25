@@ -43,14 +43,14 @@ $(document).ready(function () {
                 features: pd_data
             }, svg, path, pd_fc =>
                 get_gbif_diversity(tax, scheme_key, get_locations_str(pd_data), td_data => {
-                    const diff = map_difference(pd_fc, {
+                    const [diff, pd_subset] = map_difference(pd_fc, {
                         type: "FeatureCollection",
                         id: (Date.now() / 1000).toString(16).split(".").join(""),
                         features: td_data
-                    }, x => x.properties.pd, y => y.properties.diversity, svg, path);
+                    }, f => f.properties.pd, f => f.properties.diversity, svg, path);
                     make_plot(
                         td_data,
-                        pd_data,
+                        pd_subset,
                         x => x.properties.diversity,
                         y => y.properties.pd,
                         diff,

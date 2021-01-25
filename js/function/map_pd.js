@@ -10,6 +10,7 @@ export default function map_pd(pd_fc, svg, path, continuation) {
         .data(pd_fc.features)
         .enter()
         .append("path")
+        .attr("id", f => `pd_${f.id}`)
         .attr("fill", f => pick_colour(f, pd_fc, x => x.properties.pd))
         .attr("d", path);
     return continuation(pd_fc);
