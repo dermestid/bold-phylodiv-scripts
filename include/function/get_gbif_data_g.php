@@ -12,8 +12,8 @@ function get_gbif_data_g(string $taxon_key, $rect) {
     $GBIF_OCCURENCE_FACET = 'speciesKey';
     $GBIF_REQUEST_NUMBER = 1000;
 
-    $decimal_latitude = floatval($rect['lat_min']).','.floatval($rect['lat_max']);
-    $decimal_longitude = floatval($rect['lon_min']).','.floatval($rect['lon_max']);
+    $decimal_latitude = urlencode(floatval($rect['lat_min']).','.floatval($rect['lat_max']));
+    $decimal_longitude = urlencode(floatval($rect['lon_min']).','.floatval($rect['lon_max']));
 
     // Get gbif species and occurence counts in chunks of $GBIF_REQUEST_NUMBER
     $offset = 0;
@@ -27,15 +27,18 @@ function get_gbif_data_g(string $taxon_key, $rect) {
         . '&limit=0'
         . '&facetOffset=' . $offset
         . '&facetLimit=' . $GBIF_REQUEST_NUMBER;
-        $gbif_data_json = file_get_contents($gbif_url);
+        $context = stream_context_create(array(
+            'http' => array('ignore_errors' => true),
+        ));
+        $gbif_data_json = file_get_contents($gbif_url, false, $context);
 
-        if ($gbif_data_json === false) return false;
+        if ($gbif_data_json === false) throw new Exception();
         $gbif_data = json_decode($gbif_data_json, true);
-        if ($gbif_data === null) return false;
+        if ($gbif_data === null) throw new Exception();;
 
-        if (!isset($gbif_data['count'])) return false;
+        if (!isset($gbif_data['count'])) throw new Exception();;
         $total_occurences ??= intval($gbif_data['count']);
-        if (!isset($gbif_data['facets'][0]['counts'])) return false;
+        if (!isset($gbif_data['facets'][0]['counts'])) throw new Exception();;
         $count_data = $gbif_data['facets'][0]['counts'];
 
         foreach($count_data as $sp_record)

@@ -1,8 +1,16 @@
 import pick_colour from "./pick_colour.js";
 
 export default function make_plot(xs, ys, x_acc, y_acc, col_fc, col_acc) {
+
+    if (xs.length > ys.length) throw "different lengths";
+
     const x_ = i => x_acc(xs[i]);
-    const y_ = i => y_acc(ys[i]);
+    ys.search = x => {
+        for (const y of ys)
+            if (y.id === x.id) return y;
+        throw "not found";
+    };
+    const y_ = i => y_acc(ys.search(xs[i]));
 
     const wb = 460;
     const hb = 400;
@@ -27,6 +35,9 @@ export default function make_plot(xs, ys, x_acc, y_acc, col_fc, col_acc) {
     const width = wb - (margin.left + margin.right);
     const height = hb - (margin.top + margin.bottom);
 
+    d3.select("body")
+        .selectAll("#plot")
+        .remove();
     let svg = d3
         .select("body")
         .append("svg")
@@ -63,6 +74,7 @@ export default function make_plot(xs, ys, x_acc, y_acc, col_fc, col_acc) {
         .append("circle")
         .attr("cx", i => x(x_(i)))
         .attr("cy", i => y(y_(i)))
+        .attr("id", i => `point_${xs[i].id}`)
         .attr("r", 3)
         .style("fill", i => pick_colour(
             col_fc.features[i],
