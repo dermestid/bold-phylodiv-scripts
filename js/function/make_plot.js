@@ -1,4 +1,6 @@
 import pick_colour from "./pick_colour.js";
+import highlight from "./highlight.js";
+import highlight_off from "./highlight_off.js";
 
 export default function make_plot(xs, ys, x_acc, y_acc, col_fc, col_acc) {
 
@@ -7,7 +9,7 @@ export default function make_plot(xs, ys, x_acc, y_acc, col_fc, col_acc) {
     const x_ = i => x_acc(xs[i]);
     ys.search = x => {
         for (const y of ys)
-            if (y.id === x.id) return y;
+            if (y.key === x.key) return y;
         throw "not found";
     };
     const y_ = i => y_acc(ys.search(xs[i]));
@@ -72,12 +74,17 @@ export default function make_plot(xs, ys, x_acc, y_acc, col_fc, col_acc) {
         .data(Array.from({ length: xs.length }, (_, i) => i))
         .enter()
         .append("circle")
+        .attr("class", i => `highlightable key_${xs[i].key}`)
         .attr("cx", i => x(x_(i)))
         .attr("cy", i => y(y_(i)))
-        .attr("id", i => `point_${xs[i].id}`)
-        .attr("r", 3)
+        .attr("id", i => `point_${xs[i].key}`)
+        .attr("r", 4)
         .style("fill", i => pick_colour(
             col_fc.features[i],
             col_fc,
-            col_acc));
+            col_acc))
+        .on("mouseover", highlight)
+        .on("mouseleave", highlight_off);
+    svg.append("g")
+        .attr("id", "top_points")
 }

@@ -1,4 +1,6 @@
 import pick_colour from "./pick_colour.js";
+import highlight from "./highlight.js";
+import highlight_off from "./highlight_off.js";
 
 export default function map_pd(pd_fc, svg, path, continuation) {
     svg.selectAll(".data")
@@ -10,8 +12,11 @@ export default function map_pd(pd_fc, svg, path, continuation) {
         .data(pd_fc.features)
         .enter()
         .append("path")
-        .attr("id", f => `pd_${f.id}`)
+        .attr("class", f => `highlightable key_${f.key}`)
+        .attr("id", f => `pd_${f.key}`)
         .attr("fill", f => pick_colour(f, pd_fc, x => x.properties.pd))
-        .attr("d", path);
+        .attr("d", path)
+        .on("mouseover", highlight)
+        .on("mouseleave", highlight_off);
     return continuation(pd_fc);
 }

@@ -36,7 +36,8 @@ export default function make_map() {
             .attr("stroke", "white")
             .attr("stroke-opacity", 0.7)
             .attr("stroke-linejoin", "round")
-            .attr("d", path);
+            .attr("d", path)
+            .attr("pointer-events", "none");
     });
 
     return [svg, path];
