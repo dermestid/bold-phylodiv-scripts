@@ -1,5 +1,7 @@
 import pick_colour from "./pick_colour.js";
 import quantile from "./quantile.js";
+import highlight from "./highlight.js";
+import highlight_off from "./highlight_off.js";
 
 export default function map_difference(fc_1, fc_2, acc_1, acc_2, svg, path) {
     const n_colours = pick_colour.colours.length;
@@ -8,7 +10,7 @@ export default function map_difference(fc_1, fc_2, acc_1, acc_2, svg, path) {
     let subset = [];
     for (const g of fc_2.features)
         for (const f of fc_1.features)
-            if (g.id === f.id) { subset.push(f); break; }
+            if (g.key === f.key) { subset.push(f); break; }
     if (subset.length !== fc_2.features.length) throw "fc_1 not superset of fc_2";
 
     const q_diff = (f, i) =>
@@ -17,10 +19,10 @@ export default function map_difference(fc_1, fc_2, acc_1, acc_2, svg, path) {
 
     const fc_diff = {
         type: "FeatureCollection",
-        id: `${fc_1.id}-${fc_2.id}`,
+        key: `${fc_1.key}-${fc_2.key}`,
         features: subset.map((f, i) => ({
             type: "Feature",
-            id: f.id,
+            key: f.key,
             properties: { difference: q_diff(f, i) },
             geometry: f.geometry
         }))
@@ -39,12 +41,15 @@ export default function map_difference(fc_1, fc_2, acc_1, acc_2, svg, path) {
         .data(fc_diff.features)
         .enter()
         .append("path")
-        .attr("id", f => `diff_${f.id}`)
+        .attr("class", f => `highlightable key_${f.key}`)
+        .attr("id", f => `diff_${f.key}`)
         .attr("fill", f =>
             pick_colour(f, fc_diff, diff))
         .attr("fill-opacity", f =>
             0.5 * (1 + Math.abs(diff(f)) / max))
-        .attr("d", path);
+        .attr("d", path)
+        .on("mouseover", highlight)
+        .on("mouseleave", highlight_off);
 
     return [fc_diff, subset];
 }

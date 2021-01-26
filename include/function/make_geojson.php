@@ -4,7 +4,7 @@ function make_geojson(array $result, string $field) {
     $loc = $result['location']['data'];
     return [
         'type' => 'Feature',
-        'id' => $result['location']['key'],
+        'key' => $result['location']['key'],
         'properties' => [$field => $result[$field]],
         'geometry' => [
             'type' => 'Polygon',
