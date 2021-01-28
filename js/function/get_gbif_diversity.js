@@ -29,14 +29,20 @@ export default function get_gbif_diversity(tax, scheme, loc_str, continuation) {
     source.addEventListener("fail", fail_handler);
 
     source.addEventListener("done", event => {
-        source.removeEventListener("fail", fail_handler);
-        source.close();
         const time = (new Date()).toLocaleTimeString();
-        const report = `${time}: Done! <br>`;
-        $("#result_container").prepend(report);
-        const data = JSON.parse(event.data);
-        get_gbif_diversity.cache[`${tax} ${loc_str}`] = data;
-        continuation(data);
+        let report = `${time}: `;
+        if (event.data == 0) {
+            source.removeEventListener("fail", fail_handler);
+            source.close();
+            report += "GBIF data complete. <br>";
+            $("#result_container").prepend(report);
+        } else {
+            report += "Updated GBIF data. <br>";
+            $("#result_container").prepend(report);
+            const data = JSON.parse(event.data);
+            get_gbif_diversity.cache[`${tax} ${loc_str}`] = data;
+            continuation(data);
+        }
     });
 
     source.stream();
