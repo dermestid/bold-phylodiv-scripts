@@ -1,13 +1,13 @@
 import page_setup_input from "./function/page_setup_input.js";
-import page_setup_plot from "./function/page_setup_plot.js";
 import source_choice from "./function/source_choice.js";
 import make_map from "./function/make_map.js";
-import get_pd from "./function/get_pd.js";
-import map_pd from "./function/map_pd.js";
-import get_locations_str from "./function/get_locations_str.js";
-import get_gbif_diversity from "./function/get_gbif_diversity.js";
-import map_difference from "./function/map_difference.js";
 import make_plot from "./function/make_plot.js";
+import get_pd from "./function/get_pd.js";
+import update_pd from "./function/update_pd.js";
+import get_gbif_diversity from "./function/get_gbif_diversity.js";
+import get_locations_str from "./function/get_locations_str.js";
+import add_td_data from "./function/add_td_data.js";
+import update_pd_td_difference from "./function/update_pd_td_difference.js";
 
 $(document).ready(function () {
     const check_executables_script = "script/check_executables.php";
@@ -26,9 +26,7 @@ $(document).ready(function () {
         };
     });
 
-    const [svg, path] = make_map();
-
-    document.getElementById("get_pd").onsubmit = function () {
+    document.getElementById("get_pd").onsubmit = () => {
         const dl = (document.getElementById("download_sequences_choice").checked);
         const tax = dl ? $("#taxon").val() : $("#saved_taxa").val();
         const lat_grid = $("#lat_grid").val();
@@ -36,26 +34,19 @@ $(document).ready(function () {
         const scheme_key = `COORD-GRID_${lat_grid}x${lon_grid}`;
         const subs = $("#subs").val();
 
-        get_pd(dl, tax, scheme_key, subs, pd_data =>
-            map_pd({
-                type: "FeatureCollection",
-                id: (Date.now() / 1000).toString(16).split(".").join(""),
-                features: pd_data
-            }, svg, path, pd_fc =>
-                get_gbif_diversity(tax, scheme_key, get_locations_str(pd_data), td_data => {
-                    const [diff, pd_subset] = map_difference(pd_fc, {
-                        type: "FeatureCollection",
-                        id: (Date.now() / 1000).toString(16).split(".").join(""),
-                        features: td_data
-                    }, f => f.properties.pd, f => f.properties.diversity, svg, path);
-                    make_plot(
-                        td_data,
-                        pd_subset,
-                        x => x.properties.diversity,
-                        y => y.properties.pd,
-                        diff,
-                        f => f.properties.difference);
-                })));
+        const [map, path] = make_map();
+        const plot = make_plot();
+
+        get_pd(dl, tax, scheme_key, subs, pd_data => {
+            const id = update_pd(pd_data, map, path, plot, true);
+            get_gbif_diversity(tax, scheme_key, get_locations_str(pd_data), td_datum => {
+                add_td_data([td_datum], `td_${id}`, map, path, plot);
+                update_pd_td_difference(map, path, plot);
+            });
+        }, pd_data => {
+            update_pd(pd_data, map, path, plot, false);
+            update_pd_td_difference(map, path, plot);
+        });
         return false;
     };
 
@@ -64,8 +55,6 @@ $(document).ready(function () {
     $.getJSON(check_executables_script, function (data) {
         if (data.result === true) {
             page_setup_input();
-        } else if (data.result === false) {
-            page_setup_plot();
         }
     });
 });

@@ -1,8 +1,4 @@
-export default function get_pd(dl, tax, scheme_key, subs, continuation) {
-    if (get_pd.cache === undefined)
-        get_pd.cache = {};
-    if (get_pd.cache[`${tax} ${scheme_key} ${subs}`] != null)
-        return continuation(get_pd.cache[`${tax} ${scheme_key} ${subs}`]);
+export default function get_pd(dl, tax, scheme_key, subs, co_1, co_2) {
 
     const pd_script = "script/get_pd.php";
 
@@ -39,14 +35,21 @@ export default function get_pd(dl, tax, scheme_key, subs, continuation) {
     source.addEventListener("fail", fail_handler);
 
     source.addEventListener("done", event => {
-        source.removeEventListener("fail", fail_handler);
-        source.close();
         const time = (new Date()).toLocaleTimeString();
-        const report = `${time}: Done! <br>`;
-        $("#result_container").prepend(report);
-        const data = JSON.parse(event.data);
-        get_pd.cache[`${tax} ${scheme_key} ${subs}`] = data;
-        continuation(data);
+        let report = `${time}: `;
+        if (event.data == 0) {
+            source.removeEventListener("fail", fail_handler);
+            source.close();
+            report += "PD data complete. <br>";
+            $("#result_container").prepend(report);
+        } else {
+            report += "Updated PD data. <br>";
+            $("#result_container").prepend(report);
+            // console.log(event.data);
+            const data = JSON.parse(event.data);
+            if (data[0].properties.iteration === 0) co_1(data);
+            else co_2(data);
+        }
     });
 
     source.stream();

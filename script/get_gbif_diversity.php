@@ -47,17 +47,26 @@ if ($args['subset']) {
 
 $HILL_ORDER = 0;
 
-$geojson_ar = [];
+$i = 0;
 foreach (get_gbif_stats_g($args['taxon'], $scheme, $HILL_ORDER) as $res) {
-    $geojson_ar[] = make_geojson($res, 'diversity');
+    $res['iteration'] = $i;
+    $geojson_ar = make_geojson($res, ['iteration', 'diversity']);
+    $json = json_encode($geojson_ar);
+
+    if (!$CLI) {
+        echo "event: done\n";
+        echo "data: {$json}\n\n";
+        ob_flush();
+        flush();
+    }
+    $i++;
 }
-$json = json_encode($geojson_ar);
 
 if ($CLI)
     echo "result: {$json}".PHP_EOL;
 else {
     echo "event: done\n";
-    echo "data: {$json}\n\n";
+    echo "data: 0\n\n";
     ob_flush();
     flush();
 }

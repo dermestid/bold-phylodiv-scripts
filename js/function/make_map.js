@@ -1,17 +1,26 @@
 export default function make_map() {
 
     const width = 800;
-    const height = 400;
-    const svg = d3.select("body").append("svg")
+    const height = 390;
+
+    d3.select("body")
+        .selectAll(".map")
+        .remove();
+    const svg = d3
+        .select("body")
+        .append("svg")
+        .attr("class", "map")
         .attr("width", width)
         .attr("height", height);
 
-    const projection = d3.geoEqualEarth()
+    const projection = d3
+        .geoEqualEarth()
         .translate([width / 2, height / 2])
         .scale([144])
         .rotate([-10, 0]);
-
-    const path = d3.geoPath().projection(projection);
+    const path = d3
+        .geoPath()
+        .projection(projection);
 
     svg.append("path")
         .attr("id", "outline")
@@ -21,11 +30,11 @@ export default function make_map() {
 
     $.getJSON("countries-50m.json", world => {
         svg.insert("g", "#outline")
-            .attr("id", "map")
-            .selectAll('path')
+            .attr("id", "land")
+            .selectAll("path")
             .data(topojson.feature(world, world.objects.land).features)
             .enter()
-            .append('path')
+            .append("path")
             .attr("d", path)
             .attr("fill", "lightgray");
         svg.insert("g", "#outline")

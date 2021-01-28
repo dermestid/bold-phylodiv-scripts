@@ -1,11 +1,14 @@
 <?php
 
-function make_geojson(array $result, string $field) {
+function make_geojson(array $result, array $fields) {
     $loc = $result['location']['data'];
+    $properties = [];
+    foreach($fields as $field)
+        $properties[$field] = $result[$field];
     return [
         'type' => 'Feature',
         'key' => $result['location']['key'],
-        'properties' => [$field => $result[$field]],
+        'properties' => $properties,
         'geometry' => [
             'type' => 'Polygon',
             'coordinates' => [[
