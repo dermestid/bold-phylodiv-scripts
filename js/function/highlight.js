@@ -10,10 +10,10 @@ export default function highlight() {
         if (c.indexOf("key") === 0) {
             d3.selectAll(`.highlightable.${c}`)
                 .raise()
-                .style("stroke-width", 1)
-                .style("stroke", "black");
+                .attr("stroke-width", 1)
+                .attr("stroke", "black");
             d3.selectAll(`.ci.highlightable.${c}`)
-                .style("stroke-width", "2px");
+                .attr("stroke-width", "2px");
 
             const circle = d3.select(`circle.highlightable.${c}`);
             circle.transition()

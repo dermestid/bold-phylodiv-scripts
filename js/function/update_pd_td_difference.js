@@ -2,6 +2,7 @@ import pick_colour from "./pick_colour.js";
 import quantile from "./quantile.js";
 import highlight from "./highlight.js";
 import highlight_off from "./highlight_off.js";
+import regression_line from "./regression_line.js";
 
 export default function update_pd_td_difference(map_svg, path, plot) {
     // This function requires both PD and (a subset of) TD to be retrieved.
@@ -41,7 +42,13 @@ export default function update_pd_td_difference(map_svg, path, plot) {
             const f = {
                 type: "Feature",
                 key: d.key,
-                properties: { difference: qd[2] },
+                properties: {
+                    pd: pd(d),
+                    td: td(d),
+                    pd_quantile: qd[0] + 1,
+                    td_quantile: qd[1] + 1,
+                    difference: qd[2],
+                },
                 text: `PD=${pd(d)} (${qd[0] + 1}/${quantiles})<br>TD=${td(d)} (${qd[1] + 1}/${quantiles})`,
                 geometry: d.geometry
             };
@@ -85,4 +92,15 @@ export default function update_pd_td_difference(map_svg, path, plot) {
 
     plot.set_colours(diff_features, diff, d => d ? d.key : this.id.substring(5));
     plot.set_text(diff_features, f => f.text, d => d ? d.key : this.id.substring(5));
+
+    // The third argument means "ignore data points for which TD is in the top quantile"
+    // This is intended to get rid of outliers.
+    // This may not always be appropriate, so in future make this a changeable option.
+    const [slope, intercept, r_squared] = regression_line(
+        diff_features,
+        f => f.properties.td,
+        f => f.properties.pd,
+        f => (f.properties.td_quantile === quantiles)
+    );
+    plot.draw_line(slope, intercept, d3.min(td_data, td), d3.max(td_data, td));
 }
