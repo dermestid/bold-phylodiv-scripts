@@ -12,9 +12,11 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
     const width = wb - (margin.left + margin.right);
     const height = hb - (margin.top + margin.bottom);
 
-    const round = v => {
-        const o = 10 ** Math.floor(Math.log10(v));
-        return o * Math.ceil(v / o);
+    const round = x => {
+        const o = 10 ** Math.floor(Math.log10(x));
+        const r = o * Math.ceil(x / o);
+        if (0.75 * r > x) return 0.75 * r;
+        else return r;
     };
     const min = (s, acc) => {
         const m = d3.min(s, acc);
@@ -69,15 +71,17 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
         .attr("id", "y_axis")
         .call(d3.axisLeft(yax));
 
-    // add data point containers
+    // add data containers
     svg.append("g")
         .attr("id", "error_bars");
     svg.append("g")
         .attr("id", "points");
+    svg.append("g")
+        .attr("id", "line");
 
     svg.set_x = (xs, acc) => {
         // update axis
-        const xax = d3
+        const xax = svg.xax = d3
             .scaleLinear()
             .domain(limits(xs, acc))
             .range([0, width]);
@@ -110,7 +114,7 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
     svg.set_y = (ys, acc, write_new, ci_acc) => {
         const error_bars = !write_new;
         // update axis
-        const yax = d3
+        const yax = svg.yax = d3
             .scaleLinear()
             .domain(limits(ys, acc))
             .range([height, 0]);
@@ -134,30 +138,29 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
                     : enter,
                 update => update
                     .attr("cy", y => yax(acc(y))));
-        const enter_bars = d => d
-            .append("path")
-            .attr("class", y => `ci highlightable key_${y.key}`)
-            .attr("id", y => `ci_${y.key}`)
-            .attr("stroke", "gray")
-            .attr("stroke-width", 0.5)
-            .attr("fill", "none")
-            .attr("pointer-events", "none")
-            .attr("d", y => bar_path(
-                ci_acc(y),
-                parseFloat(d3.select(`#point_${y.key}`).attr("cx")),
-                acc(y),
-                yax
-            ));
         if (error_bars)
             svg.select("g#error_bars")
                 .selectAll("path.ci")
                 .data(ys, d => d ? d.key : this.id.substring(3))
                 .join(
-                    enter_bars,
+                    enter => enter
+                        .append("path")
+                        .attr("class", y => `ci highlightable key_${y.key}`)
+                        .attr("id", y => `ci_${y.key}`)
+                        .attr("stroke", "gray")
+                        .attr("stroke-width", 0.5)
+                        .attr("fill", "none")
+                        .attr("pointer-events", "none")
+                        .attr("d", y => bar_path(
+                            ci_acc(y),
+                            parseFloat(svg.select(`#point_${y.key}`).attr("cx")),
+                            acc(y),
+                            yax
+                        )),
                     update => update
                         .attr("d", y => bar_path(
                             ci_acc(y),
-                            parseFloat(d3.select(`#point_${y.key}`).attr("cx")),
+                            parseFloat(svg.select(`#point_${y.key}`).attr("cx")),
                             acc(y),
                             yax
                         )));
@@ -178,6 +181,33 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
             .selectAll("circle")
             .data(text_set, matcher)
             .text(acc);
+
+    svg.draw_line = (slope, intercept, x_min, x_max) =>
+        svg.select("g#line")
+            .selectAll("line")
+            .data([arguments])
+            .join(
+                enter => enter
+                    .append("line")
+                    .attr("stroke", "darkslategray")
+                    .attr("stroke-dasharray", "4")
+                    .attr("stroke-width", 2)
+                    .attr("pointer-events", "none")
+                    .attr("x1", svg.xax(x_min))
+                    .attr("y1", svg.yax(x_min * slope + intercept))
+                    .attr("x2", svg.xax(x_max))
+                    .attr("y2", svg.yax(x_max * slope + intercept)),
+                update => update
+                    .call(
+                        update => update
+                            .transition(
+                                svg.transition()
+                                    .duration(500))
+                            .attr("x1", svg.xax(x_min))
+                            .attr("y1", svg.yax(x_min * slope + intercept))
+                            .attr("x2", svg.xax(x_max))
+                            .attr("y2", svg.yax(x_max * slope + intercept))));
+
 
     return svg;
 }
