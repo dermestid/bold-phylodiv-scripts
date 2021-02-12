@@ -183,7 +183,9 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
             .style("fill", c => pick_colour(
                 c,
                 col_set,
-                acc));
+                acc,
+                "",
+                2));
 
     svg.set_text = (text_set, acc, matcher) =>
         svg.select("g#points")

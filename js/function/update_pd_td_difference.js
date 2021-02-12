@@ -75,7 +75,7 @@ export default function update_pd_td_difference(map_svg, path, plot) {
                 .attr("class", f => `highlightable key_${f.key}`)
                 .attr("id", f => `diff_${f.key}`)
                 .attr("fill", f =>
-                    pick_colour(f, diff_features, diff))
+                    pick_colour(f, diff_features, diff, "", 2))
                 .attr("fill-opacity", f =>
                     0.5 * (1 + Math.abs(diff(f)) / Math.max(max, 1)))
                 .attr("d", path)
@@ -85,7 +85,7 @@ export default function update_pd_td_difference(map_svg, path, plot) {
             update => update
                 .text(f => f.text)
                 .attr("fill", f =>
-                    pick_colour(f, diff_features, diff))
+                    pick_colour(f, diff_features, diff, "", 2))
                 .attr("fill-opacity", f =>
                     0.5 * (1 + Math.abs(diff(f)) / Math.max(max, 1)))
         );
