@@ -54,6 +54,7 @@ foreach (get_gbif_stats_g($args['taxon'], $scheme, $HILL_ORDER) as $res) {
     $json = json_encode($geojson_ar);
 
     if (!$CLI) {
+        echo "\n\n";
         echo "event: done\n";
         echo "data: {$json}\n\n";
         ob_flush();
@@ -65,6 +66,7 @@ foreach (get_gbif_stats_g($args['taxon'], $scheme, $HILL_ORDER) as $res) {
 if ($CLI)
     echo "result: {$json}".PHP_EOL;
 else {
+    echo "\n\n";
     echo "event: done\n";
     echo "data: 0\n\n";
     ob_flush();
