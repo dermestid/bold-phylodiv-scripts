@@ -104,6 +104,7 @@ for ($sample_iteration = 0; $sample_iteration < $iterations; $sample_iteration++
     if ($CLI)
         echo "result: {$json}".PHP_EOL;
     else {
+        echo "\n\n";
         echo "event: done\n";
         echo "data: {$json}\n\n";
         ob_flush();
@@ -114,6 +115,7 @@ for ($sample_iteration = 0; $sample_iteration < $iterations; $sample_iteration++
 
 if ($CLI) exit;
 
+echo "\n\n";
 echo "event: done\n";
 echo "data: 0\n\n";
 ob_flush();
