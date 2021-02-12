@@ -5,7 +5,7 @@ import pick_colour from "./pick_colour.js";
 
 export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
 
-    const wb = 400;
+    const wb = 600;
     const hb = 350;
     const margin = { top: 10, right: 30, bottom: 30, left: 60 };
 
@@ -22,7 +22,16 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
         const m = d3.min(s, acc);
         return (m >= 0) ? 0 : -(round(-m));
     };
-    const limits = (s, acc) => [min(s, acc), round(d3.max(s, acc))];
+    const limits = (s, acc, keep_outliers = true) => {
+        const min_val = min(s, acc);
+        const max_val = d3.max(s, acc);
+        if (s.length <= 2 || keep_outliers) return [min_val, round(max_val)];
+        let without_max = [...s];
+        without_max.splice(d3.greatestIndex(s, acc), 1);
+        const second_biggest = d3.max(without_max, acc);
+        const max = (second_biggest * 1.5 < max_val) ? second_biggest : max_val;
+        return [min_val, round(max)];
+    };
 
     d3.select("body")
         .selectAll(".plot")
@@ -83,7 +92,7 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
         // update axis
         const xax = svg.xax = d3
             .scaleLinear()
-            .domain(limits(xs, acc))
+            .domain(limits(xs, acc, false))
             .range([0, width]);
         svg.select("#x_axis")
             .call(d3.axisBottom(xax));
