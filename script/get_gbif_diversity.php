@@ -50,7 +50,7 @@ $HILL_ORDER = 0;
 $i = 0;
 foreach (get_gbif_stats_g($args['taxon'], $scheme, $HILL_ORDER) as $res) {
     $res['iteration'] = $i;
-    $geojson_ar = make_geojson($res, ['iteration', 'diversity']);
+    $geojson_ar = make_geojson($res, ['iteration', 'diversity', 'observations']);
     $json = json_encode($geojson_ar);
 
     if (!$CLI) {
