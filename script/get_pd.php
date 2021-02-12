@@ -97,7 +97,7 @@ for ($sample_iteration = 0; $sample_iteration < $iterations; $sample_iteration++
         }
     }
     $geojson_ar = array_map(
-        fn($res) => make_geojson($res, ['iteration', 'pd', 'pd_ci']), 
+        fn($res) => make_geojson($res, ['iteration', 'pd', 'pd_ci', 'pop_size']),
         $results
     );
     $json = json_encode($geojson_ar);

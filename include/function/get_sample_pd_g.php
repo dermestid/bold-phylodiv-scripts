@@ -75,7 +75,7 @@ function get_sample_pd_g($gen) {
     // calculate pd
     $pd_gen = get_tree_lengths_g($nexus_string);
     foreach (both($locations, $pd_gen) as [$loc, $pd]) {
-        yield [true, '', ['location' => $loc, 'pd' => $pd]];
+        yield [true, '', ['location' => $loc, 'pd' => $pd, 'pop_size' => $loc['pop_size']]];
     }
 }
 
