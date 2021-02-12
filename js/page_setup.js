@@ -34,18 +34,18 @@ $(document).ready(function () {
         const scheme_key = `COORD-GRID_${lat_grid}x${lon_grid}`;
         const subs = $("#subs").val();
 
-        const [map, path] = make_map();
+        const map = make_map();
         const plot = make_plot();
 
         get_pd(dl, tax, scheme_key, subs, pd_data => {
-            const id = update_pd(pd_data, map, path, plot, true);
+            const id = update_pd(pd_data, map, plot, true);
             get_gbif_diversity(tax, scheme_key, get_locations_str(pd_data), td_datum => {
-                add_td_data([td_datum], `td_${id}`, map, path, plot);
-                update_pd_td_difference(map, path, plot);
+                add_td_data([td_datum], `td_${id}`, map, plot);
+                update_pd_td_difference(map, plot);
             });
         }, pd_data => {
-            update_pd(pd_data, map, path, plot, false);
-            update_pd_td_difference(map, path, plot);
+            update_pd(pd_data, map, plot, false);
+            update_pd_td_difference(map, plot);
         });
         return false;
     };
