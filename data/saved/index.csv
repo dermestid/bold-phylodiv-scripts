@@ -1,2 +1,8 @@
 taxon,file
 Anura,../data/saved/Anura.csv
+Aves,../data/saved/Aves.csv
+Mammalia,../data/saved/Mammalia.csv
+Coleoptera,../data/saved/Coleoptera.csv
+Arachnida,../data/saved/Arachnida.csv
+Malacostraca,../data/saved/Malacostraca.csv
+Echinodermata,../data/saved/Echinodermata.csv
