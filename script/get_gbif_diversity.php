@@ -17,7 +17,7 @@ require_once '../include/class/division_scheme.php';
 require_once '../include/class/division_scheme_subset.php';
 require_once '../include/function/make_geojson.php';
 
-set_time_limit(300);
+set_time_limit(0);
 register_shutdown_function(function () {
     // This function will actually be called for all shutdowns,
     // including normal exit, however, all other exit points
