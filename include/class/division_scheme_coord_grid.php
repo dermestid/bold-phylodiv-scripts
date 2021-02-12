@@ -58,7 +58,7 @@ class Division_Scheme_Coord_Grid extends Division_Scheme_Coord
     private const MINIMUM_LONGITUDE = -180;
     private const MAXIMUM_LONGITUDE = 180;
 
-    public function locations_g(bool $include_poles = false) {
+    public function locations_g(bool $include_poles = true) {
         $min_latitude = $include_poles ? self::MINIMUM_LATITUDE : self::MINIMUM_LATITUDE_NONPOLAR;
         $max_latitude = $include_poles ? self::MAXIMUM_LATITUDE : self::MAXIMUM_LATITUDE_NONPOLAR;
         foreach (
