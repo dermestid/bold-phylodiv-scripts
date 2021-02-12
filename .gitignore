@@ -3,3 +3,6 @@ vendor/
 test.php
 temp*
 *.log
+Lepidoptera.csv
+Coleoptera.csv
+Arachnida.csv
