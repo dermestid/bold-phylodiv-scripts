@@ -37,7 +37,7 @@ export default function add_td_data(data, id, map, path, plot) {
         .append("path")
         .attr("class", f => `highlightable key_${f.key}`)
         .attr("id", f => `td_${f.key}`)
-        .attr("fill", f => pick_colour(f, data, d => d.properties.diversity))
+        .attr("fill", f => pick_colour(f, data, d => d.properties.diversity, id, 2))
         .attr("d", path)
         .text(f => `TD=${f.properties.diversity}`)
         .on("mouseover", highlight)
