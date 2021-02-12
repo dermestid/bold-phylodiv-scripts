@@ -39,6 +39,7 @@ function sample_sequences_g($gen, $k) {
     foreach ($reservoirs as $key => $sample) {
         if ($i[$key] >= $k) {
             // if reservoir is full
+            $sample[0]['pop_size'] = $i[$key];
             yield $key => $sample;
         }
     }
