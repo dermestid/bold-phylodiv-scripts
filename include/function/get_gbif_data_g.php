@@ -10,7 +10,7 @@
 function get_gbif_data_g(string $taxon_key, $rect) {
     $GBIF_OCCURENCE_URL_PREFIX = 'http://api.gbif.org/v1/occurrence/search';
     $GBIF_OCCURENCE_FACET = 'speciesKey';
-    $GBIF_REQUEST_NUMBER = 1000;
+    $GBIF_REQUEST_NUMBER = 10000;
 
     $decimal_latitude = urlencode(floatval($rect['lat_min']).','.floatval($rect['lat_max']));
     $decimal_longitude = urlencode(floatval($rect['lon_min']).','.floatval($rect['lon_max']));
