@@ -19,13 +19,13 @@ function get_gbif_stats_g(
 
     foreach($scheme->locations_g() as $loc) {
         $gbif_data_gen = get_gbif_data_g($taxon_key, $loc['data']);
-        $loc_diversity = $diversity($gbif_data_gen);
+        [$loc_diversity, $total] = $diversity($gbif_data_gen);
         if ($loc_diversity === null) continue;
 
         if ($transform !== null)
             $loc_diversity = $transform($loc_diversity);
         
-        yield [ 'location' => $loc, 'diversity' => $loc_diversity ];
+            yield [ 'location' => $loc, 'diversity' => $loc_diversity, 'observations' => $total ];
     }
 }
 

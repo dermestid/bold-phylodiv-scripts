@@ -13,50 +13,54 @@ function hill_diversity_number (int $hill_order) {
     switch ($hill_order) {
         case 0:
             return function ($gen) {
+                $total = $gen->current()['total'];
                 $i = 0;
                 try {
                     foreach ($gen as $y) $i++;
-                } catch(Exception $e) { return null; }
-                if ($i === 0) return null;
-                else return $i;
+                } catch(Exception $e) { return [null, 0]; }
+                if ($i === 0) return [null, 0];
+                else return [$i, $total];
             };
         case 1:
             return function ($gen) {
+                $total = $gen->current()['total'];
                 $shannon_wiener_index = 0;
                 try {
-                    foreach ($gen as ['count' => $count, 'total' => $total]) {
+                    foreach ($gen as ['count' => $count]) {
                         $p = $count / $total;
                         $shannon_wiener_index -= ($p * log($p));
                     }
-                } catch(Exception $e) { return null; }
-                if ($shannon_wiener_index === 0) return null;
-                else return exp($shannon_wiener_index);
+                } catch(Exception $e) { return [null, 0]; }
+                if ($shannon_wiener_index === 0) return [null, 0];
+                else return [exp($shannon_wiener_index), $total];
             };
         case 2:
             return function ($gen) {
+                $total = $gen->current()['total'];
                 $simpson_index = 0;
                 try {
-                    foreach ($gen as ['count' => $count, 'total' => $total]) {
+                    foreach ($gen as ['count' => $count]) {
                         $p = $count / $total;
                         $simpson_index += ($p * $p);
                     }
-                } catch(Exception $e) { return null; }
-                if ($simpson_index === 0) return null;
-                else return (1 / $simpson_index);
+                } catch(Exception $e) { return [null, 0]; }
+                if ($simpson_index === 0) return [null, 0];
+                else return [(1 / $simpson_index), $total];
             };
         default:
             return function ($gen) {
+                $total = $gen->current()['total'];
                 $hill_sum = 0;
                 try {
-                    foreach ($gen as ['count' => $count, 'total' => $total]) {
+                    foreach ($gen as ['count' => $count]) {
                         $p = $count / $total;
                         $hill_sum += ($p ** $hill_order);
                     }
-                } catch(Exception $e) { return null; }
-                if ($hill_sum === 0) return null;
+                } catch(Exception $e) { return [null, 0]; }
+                if ($hill_sum === 0) return [null, 0];
                 else {
                     $hill_exp = (1 / (1 - $hill_order));
-                    return ($hill_sum ** $hill_exp); }
+                    return [($hill_sum ** $hill_exp), $total]; }
             };
     } // end switch
 }
