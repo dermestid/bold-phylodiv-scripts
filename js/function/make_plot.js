@@ -111,8 +111,9 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
                     .on("mouseleave", highlight_off)
                     .attr("r", 4),
                 update => {
+                    const k = update.attr("id").substring(6);
                     svg.select("g#error_bars")
-                        .select(`path#ci_${update.key}`)
+                        .select(`path#ci_${k.replace(/\./g, "\\.")}`)
                         .attr("transform", x => `translate(${xax(acc(x))}, 0)`);
                     return update.attr("cx", x => xax(acc(x)));
                 },
@@ -162,14 +163,22 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
                         .attr("pointer-events", "none")
                         .attr("d", y => bar_path(
                             ci_acc(y),
-                            parseFloat(svg.select(`#point_${y.key}`).attr("cx")),
+                            parseFloat(svg.select(
+                                `#point_${y.key
+                                    .replace(/\./g, "\\.")
+                                }`
+                            ).attr("cx")),
                             acc(y),
                             yax
                         )),
                     update => update
                         .attr("d", y => bar_path(
                             ci_acc(y),
-                            parseFloat(svg.select(`#point_${y.key}`).attr("cx")),
+                            parseFloat(svg.select(
+                                `#point_${y.key
+                                    .replace(/\./g, "\\.")
+                                }`
+                            ).attr("cx")),
                             acc(y),
                             yax
                         )));

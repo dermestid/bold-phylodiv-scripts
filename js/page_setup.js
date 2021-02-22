@@ -29,9 +29,8 @@ $(document).ready(function () {
     document.getElementById("get_pd").onsubmit = () => {
         const dl = (document.getElementById("download_sequences_choice").checked);
         const tax = dl ? $("#taxon").val() : $("#saved_taxa").val();
-        const lat_grid = $("#lat_grid").val();
         const lon_grid = $("#lon_grid").val();
-        const scheme_key = `COORD-GRID_${lat_grid}x${lon_grid}`;
+        const scheme_key = `EQUAL-AREA_${lon_grid}`;
         const subs = $("#subs").val();
 
         const map = make_map();
