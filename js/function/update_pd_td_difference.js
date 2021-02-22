@@ -18,7 +18,10 @@ export default function update_pd_td_difference(map, plot) {
     // Get PD from map squares with IDs matching the TD nodes
     const pd = d => map
         .select("g.pd")
-        .select(`#pd_${d.key}`)
+        .select(
+            `#pd_${d.key
+                .replace(/\./g, "\\.")
+            }`)
         .datum()
         .properties.pd;
 

@@ -6,16 +6,17 @@ export default function highlight() {
 
     highlight_off();
 
-    for (const c of classes)
-        if (c.indexOf("key") === 0) {
-            d3.selectAll(`.highlightable.${c}`)
+    for (const c of classes) {
+        const s = c.replace(/\./g, "\\.");
+        if (s.indexOf("key") === 0) {
+            d3.selectAll(`.highlightable.${s}`)
                 .raise()
                 .attr("stroke-width", 1)
                 .attr("stroke", "black");
-            d3.selectAll(`.ci.highlightable.${c}`)
+            d3.selectAll(`.ci.highlightable.${s}`)
                 .attr("stroke-width", "2px");
 
-            const circle = d3.select(`circle.highlightable.${c}`);
+            const circle = d3.select(`circle.highlightable.${s}`);
             circle.transition()
                 .duration(200)
                 .attr("r", 7);
@@ -29,5 +30,5 @@ export default function highlight() {
                 .raise()
                 .html(circle.text());
         }
-
+    }
 }

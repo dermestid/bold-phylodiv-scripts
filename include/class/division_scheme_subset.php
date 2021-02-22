@@ -1,12 +1,11 @@
 <?php
 
 require_once '../include/class/division_scheme_coord.php';
-require_once '../include/class/division_scheme_coord_grid.php';
 require_once '../include/class/bold.php';
 
 class Division_Scheme_Subset extends Division_Scheme_Coord
 {
-    public static function get(Division_Scheme_Coord_Grid $super, string $loc_str) {
+    public static function get(Division_Scheme_Coord $super, string $loc_str) {
         // Split X,Y/Z,W_A,B/C,D into [[[X,Y],[Z,W]],[[A,B],[C,D]]] etc
         $rects = array_map(
             fn($rect) => array_map(
@@ -22,11 +21,11 @@ class Division_Scheme_Subset extends Division_Scheme_Coord
         else return new Division_Scheme_Subset($super, $rects, $loc_str);
     }
 
-    private Division_Scheme_Coord_Grid $super;
+    private Division_Scheme_Coord $super;
     private array $rects;
     private string $loc_str;
 
-    public function __construct(Division_Scheme_Coord_Grid $super, array $rects, string $loc_str) {
+    public function __construct(Division_Scheme_Coord $super, array $rects, string $loc_str) {
         $this->super = $super;
         $this->rects = $rects;
         $this->loc_str = $loc_str;

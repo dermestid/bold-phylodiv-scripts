@@ -19,6 +19,8 @@ export default function make_map() {
 
     const projection = d3
         .geoEqualEarth()
+        // .geoCylindricalEqualArea()
+        // .parallel(37)
         .translate([width / 2, height / 2])
         .scale([144])
         .rotate([-10, 0]);
