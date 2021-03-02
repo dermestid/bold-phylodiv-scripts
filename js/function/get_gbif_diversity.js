@@ -1,4 +1,4 @@
-export default function get_gbif_diversity(tax, scheme, loc_str, continuation) {
+export default function get_gbif_diversity(tax, scheme, loc_str, c_update, c_complete) {
     if (get_gbif_diversity.cache === undefined)
         get_gbif_diversity.cache = {};
     if (get_gbif_diversity.cache[`${tax} ${loc_str}`] != null)
@@ -36,12 +36,13 @@ export default function get_gbif_diversity(tax, scheme, loc_str, continuation) {
             source.close();
             report += "GBIF data complete. <br>";
             $("#result_container").prepend(report);
+            c_complete(c_update());
         } else {
             report += "Updated GBIF data. <br>";
-            $("#result_container").prepend(report);
+            // $("#result_container").prepend(report);
             const data = JSON.parse(event.data);
             get_gbif_diversity.cache[`${tax} ${loc_str}`] = data;
-            continuation(data);
+            c_update(data);
         }
     });
 
