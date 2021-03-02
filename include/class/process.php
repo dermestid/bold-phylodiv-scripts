@@ -1,6 +1,6 @@
 <?php
 
-require_once '../include/config/global.php'; // $WINDOWS, $CLI, $APP_NAME
+require_once '../include/config/global.php'; // $WINDOWS, $CLI
 
 // adapted from code of user Peec / dell_petter at hotmail dot com
 // at https://www.php.net/manual/en/function.exec.php#88704
@@ -9,25 +9,30 @@ class Process{
 
     private int $pid;
     private string $command;
-    private string $temp_out;
+    private string $outfile;
 
     public function __construct(string $command, string $outfile = ''){
+        global $CLI;
 
-        do {
-            $this->temp_out = self::TEMP_DIR . uniqid('proc');
-        } while(file_exists($this->temp_out));
+        if ($outfile === '') {
+            $rand_prefix = $CLI ? 'proc' : hash(
+                'crc32b', 
+                $_SERVER['REMOTE_ADDR'].'_'.$_SERVER['REQUEST_TIME_FLOAT'].'_'.$_SERVER['REMOTE_PORT']);
+            do {
+                $this->outfile = self::TEMP_DIR . uniqid($rand_prefix);
+            } while(file_exists($this->outfile));
+        } else {
+            $this->outfile = $outfile;
+        }
 
         $this->command = $command;
 
-        $this->run($outfile);
+        $this->run();
     }
-    private function run(string $outfile = ''){
+    private function run(){
         global $WINDOWS;
-
-        if ($outfile === '')
-            $outfile = $this->temp_out;
         
-        $spec = [1 => ['file', $outfile, 'w']];
+        $spec = [1 => ['file', $this->outfile, 'w']];
 
         if ($WINDOWS) {
             $proc = proc_open('start /b '.$this->command, $spec, $pipes);
@@ -53,14 +58,13 @@ class Process{
 
     // returns true iff the process is still running
     public function status(){
-        return self::get_status($this->pid);
+        $status = self::get_status($this->pid);
+        // if ($status === false) unlink($this->outfile);
+        return $status;
     }
 
     public static function get_status($pid) {
         global $WINDOWS;
-
-        // Clear the temp files
-        self::clear_temp_proc();
 
         $op = [];
         if ($WINDOWS) {
@@ -90,10 +94,6 @@ class Process{
             if ($this->status() == false)return true;
             else return false;
         }
-    }
-
-    private static function clear_temp_proc() {
-        array_map('unlink', glob(self::TEMP_DIR."proc*"));
     }
 }
 ?>

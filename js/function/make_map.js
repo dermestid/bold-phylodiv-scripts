@@ -53,37 +53,46 @@ export default function make_map() {
             .attr("stroke-linejoin", "round")
             .attr("d", path)
             .attr("pointer-events", "none");
+
+        svg.insert("g", "#borders")
+            .attr("id", "data");
     });
 
-    svg.data = (id, class_name, dataset, key_acc, matcher, acc, text_fn = d => `${class_name}=${acc(d)}`) => {
-        let group = svg.selectAll(`g.${class_name}`);
+    svg.append("g")
+        .attr("id", "legend");
+    const legend_container = svg.select("g#legend");
+
+    svg.data = (data_id, data_type, dataset, key_acc, matcher, acc, text_fn = d => `${data_type}=${acc(d)}`) => {
+        const id_escaped = data_id.replace(/\./g, "\\.");
+        let group = svg.select(`g.data.${data_type}.${id_escaped}`);
         if (group.empty())
-            group = svg.insert("g", "#borders")
-                .attr("class", `data ${class_name}`)
-                .attr("id", id);
+            group = svg.select("#data")
+                .append("g")
+                .attr("class", `data ${data_type} ${data_id}`);
         group.attr("visibility", "hidden")
             .selectAll("path")
             .data(dataset, matcher)
             .join(
                 enter => enter
                     .append("path")
-                    .attr("class", d => `highlightable key_${key_acc(d)}`)
-                    .attr("id", d => `${class_name}_${key_acc(d)}`)
-                    .attr("fill", d => pick_colour(d, dataset, acc, id, 2))
+                    .attr("class", d => `highlightable group_${data_id} key_${key_acc(d)}`)
+                    .attr("id", d => `${data_type}_${key_acc(d)}`)
+                    .attr("fill", d => pick_colour(d, dataset, acc, data_id, 2))
                     .attr("d", path)
                     .text(text_fn)
                     .on("mouseover", highlight)
                     .on("mouseleave", highlight_off),
                 update => update
                     .text(text_fn)
-                    .attr("fill", d => pick_colour(d, dataset, acc, id, 2))
+                    .attr("fill", d => pick_colour(d, dataset, acc, data_id, 2))
             );
     };
 
-    svg.show = class_name => {
+    svg.show = (data_type, data_id) => {
+        const id_escaped = data_id.replace(/\./g, "\\.");
         svg.selectAll(".data")
             .attr("visibility", "hidden");
-        svg.select(`g.data.${class_name}`)
+        svg.select(`g.data.${data_type}.${id_escaped}`)
             .attr("visibility", "visible");
     };
 
@@ -91,13 +100,16 @@ export default function make_map() {
     const legend_offset_x = 45;
     const legend_offset_y = 250
 
-    svg.legend = (class_name, id) => {
-        svg.selectAll(".legend")
+    svg.legend = (data_type, data_id) => {
+        legend_container.select("g#legend")
+            .selectAll("g")
             .attr("visibility", "hidden");
-        let legend_group = svg.selectAll(`g.${class_name}_legend`);
+        let legend_group = legend_container
+            .selectAll(`g.${data_type}.${data_id}`);
         if (legend_group.empty()) {
-            legend_group = svg.append("g")
-                .attr("class", `legend ${class_name}_legend`)
+            legend_group = legend_container
+                .append("g")
+                .attr("class", `legend ${data_type} ${data_id}`)
                 .style("outline", "solid black");
             legend_group.append("rect")
                 .attr("x", legend_offset_x)
@@ -106,6 +118,7 @@ export default function make_map() {
                 .attr("width", 100)
                 .attr("height", (rect_size + 5) * pick_colour.colours.length);
         }
+
         legend_group
             .attr("visibility", "visible")
             .selectAll("g")
@@ -124,14 +137,14 @@ export default function make_map() {
                         .attr("id", (c, i) => `legend_text_${i}`)
                         .attr("x", legend_offset_x + rect_size * 1.2)
                         .attr("y", (c, i) => 5 + legend_offset_y + i * (rect_size + 5) + rect_size / 2)
-                        .text((c, i) => pick_colour.interval(id, i))
+                        .text((c, i) => pick_colour.interval(data_id, i))
                         .attr("text-anchor", "left")
                         .style("alignment-baseline", "middle");
                     return g;
                 },
                 update => update
                     .select("text")
-                    .text((c, i) => pick_colour.interval(id, i))
+                    .text((c, i) => pick_colour.interval(data_id, i))
             );
     }
 

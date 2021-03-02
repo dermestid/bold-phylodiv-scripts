@@ -11,13 +11,17 @@ class Alignment {
     private bool $keep_logs;
 
     public function __construct(string $infile, string $logfile = '') {
-        global $CLUSTAL_PATH;
-        
+        global $CLUSTAL_PATH, $CLI;
+
+        $rand_prefix = $CLI ? 'l' : hash(
+            'crc32b', 
+            $_SERVER['REMOTE_ADDR'].'_'.$_SERVER['REQUEST_TIME_FLOAT'].'_'.$_SERVER['REMOTE_PORT']);
+
         $this->infile = $infile;
         if ($logfile === '') {
             $this->keep_logs = false;
             do {
-                $this->logfile = uniqid().'.log';
+                $this->logfile = 'log/'.uniqid($rand_prefix).'.log';
             } while (file_exists($this->logfile));
         } else {
             $this->logfile = $logfile;

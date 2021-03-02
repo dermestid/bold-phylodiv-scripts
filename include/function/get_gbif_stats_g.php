@@ -25,7 +25,7 @@ function get_gbif_stats_g(
         if ($transform !== null)
             $loc_diversity = $transform($loc_diversity);
         
-            yield [ 'location' => $loc, 'diversity' => $loc_diversity, 'observations' => $total ];
+            yield [ 'location' => $loc, 'td' => $loc_diversity, 'observations' => $total ];
     }
 }
 

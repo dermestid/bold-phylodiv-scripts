@@ -7,7 +7,7 @@ export default function highlight_off() {
     d3.selectAll(`circle.highlightable`)
         .transition()
         .duration(200)
-        .attr("r", 4);
+        .attr("r", 3);
     d3.select(".tooltip")
         .style("opacity", 0);
 }

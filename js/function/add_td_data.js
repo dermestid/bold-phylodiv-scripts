@@ -7,6 +7,7 @@ export default function add_td_data(data, id, map, plot) {
         add_td_data.cache[id] = data;
     else {
         for (const datum of data) {
+            if (datum === undefined) { console.log("good!"); continue; }
             let found = false;
             for (const cached of add_td_data.cache[id])
                 if (cached.key === datum.key) found = true;
@@ -21,8 +22,10 @@ export default function add_td_data(data, id, map, plot) {
         add_td_data.cache[id],
         d => d.key,
         d => d ? d.key : this.id.substring(3),
-        d => d.properties.diversity);
+        d => d.properties.td);
 
     // Update plot
-    plot.set_x(add_td_data.cache[id], d => d.properties.diversity);
+    plot.set_x(id, add_td_data.cache[id], d => d.properties.td);
+
+    return add_td_data.cache[id];
 }

@@ -8,7 +8,31 @@ export default function highlight() {
 
     for (const c of classes) {
         const s = c.replace(/\./g, "\\.");
-        if (s.indexOf("key") === 0) {
+
+        if (s.indexOf("group") === 0) {
+
+            const data_type = 'pd'; // Change this when there's a form to alter whether PD or TD is on map
+
+            const data_id = s.substring(6);
+            const group = d3.selectAll(`.${data_id}`);
+            group.raise();
+            group.selectAll(`circle.highlightable.${s}`)
+                .transition()
+                .duration(200)
+                .attr("r", 4);
+
+            d3.selectAll(".data")
+                .attr("visibility", "hidden");
+            d3.selectAll(".legend")
+                .attr("visibility", "hidden");
+            // .selectAll("g")
+            // .attr("visibility", "hidden");
+            d3.selectAll(`g.${data_type}.${data_id}`)
+                .attr("visibility", "visible");
+            // .selectAll("g")
+            // .attr("visibility", "visible");
+
+        } else if (s.indexOf("key") === 0) {
             d3.selectAll(`.highlightable.${s}`)
                 .raise()
                 .attr("stroke-width", 1)

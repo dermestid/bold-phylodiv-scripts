@@ -1,16 +1,9 @@
-export default function quantile(input, set, quantiles, acc = i => i) {
-    const x = acc(input);
-    const data = set.map(acc).sort((a, b) => a - b);
+export default function quantile(x, data, quantiles) {
 
-    let levels = [];
-    for (let i = 0; i < quantiles; i++)
-        levels[i] = d3.quantileSorted(
+    for (let i = 0; i < quantiles; i++) {
+        const level = d3.quantileSorted(
             data,
             (i + 1) / quantiles);
-
-    let i = 0;
-    for (const level of levels) {
         if (x <= level) return i;
-        i++;
     }
 }

@@ -22,13 +22,11 @@ require_once '../include/function/make_geojson.php';
 
 set_time_limit(0);
 $DIR = getcwd();
-register_shutdown_function(function () use ($DIR) {
+register_shutdown_function(function () {
     // This function will actually be called for all shutdowns,
     // including normal exit, however, all other exit points
     // should return a 'fail' or 'done' event before this function
     // gets called, so that the client ignores this event.
-    foreach (glob("$DIR/*.log") as $file) unlink($file);
-    foreach (glob("$DIR/temp*") as $file) unlink($file);
     stream_exit('timeout', false);
 });
 
@@ -48,78 +46,62 @@ if(!get_args($args)) stream_exit('incorrect args', $CLI);
 $scheme = Division_Scheme::read($args['division_scheme_key']);
 if ($scheme === false) stream_exit('incorrect division scheme key', $CLI);
 
-$iterations = 20;
-$dataset = [];
+// $a = json_encode($scheme);
+// system("start echo $a");
 
-for ($sample_iteration = 0; $sample_iteration < $iterations; $sample_iteration++)
-{
-    $pd_gen = get_pd_generator($args, $scheme);
-    $results = [];
-    $i = 0;
+$pd_gen = get_pd_generator($args, $scheme);
+$results = [];
+$i = 0;
 
-    // Get sequences, sample, and calculate pd, building geojson array
-    if ($CLI) {
-        foreach ($pd_gen as $result) {
-    
-            if ($result === null) {
-                $i++;
-                update_after_period($PERIOD, $prev_time, true, "Read {$i} sequences...");
-                continue;
-            }
-            
-            [ $done, $task, $data ] = $result;
-            if ($done) {
-                get_data_stats($data, $dataset, $sample_iteration, 'pd', 'pd_ci');
-                $results[] = $data;
-            } else {
-                update_after_period($PERIOD, $prev_time, true, "Task in progress: {$task}");
-            }
+// Get sequences, sample, and calculate pd, building geojson array
+if ($CLI) {
+    foreach ($pd_gen as $result) {
+
+        if ($result === null) {
+            $i++;
+            update_after_period($PERIOD, $prev_time, true, "Read {$i} sequences...");
+            continue;
         }
-    } else {
-        foreach ($pd_gen as $result) {
-            if (connection_aborted()) exit;
         
-            if ($result === null) {
-                $i++;
-                update_after_period(
-                    $PERIOD, $prev_time, false, ['task' => 'sampling', 'sequences' => $i], 'working');
-                continue;
-            }
-            
-            [ $done, $task, $data ] = $result;
-            if ($done) {
-                get_data_stats($data, $dataset, $sample_iteration, 'pd', 'pd_ci');
-                $results[] = $data;
-            } else {
-                update_after_period(
-                    $PERIOD, $prev_time, false, ['task' => 'alignment'], 'working');
-            }
-        }
+        [ $done, $task, $data ] = $result;
+        if ($done)
+            $results[] = $data;
+        else
+            update_after_period($PERIOD, $prev_time, true, "Task in progress: {$task}");
     }
-    $geojson_ar = array_map(
-        fn($res) => make_geojson($res, ['iteration', 'pd', 'pd_ci', 'pop_size']),
-        $results
-    );
-    $json = json_encode($geojson_ar);
-    if ($CLI)
-        echo "result: {$json}".PHP_EOL;
-    else {
-        echo "\n\n";
-        echo "event: done\n";
-        echo "data: {$json}\n\n";
-        ob_flush();
-        flush();
+} else {
+    foreach ($pd_gen as $result) {
+        if (connection_aborted()) exit;
+    
+        if ($result === null) {
+            $i++;
+            update_after_period(
+                $PERIOD, $prev_time, false, ['task' => 'sampling', 'sequences' => $i], 'working');
+            continue;
+        }
+        
+        [ $done, $task, $data ] = $result;
+        if ($done)
+            $results[] = $data;
+        else
+            update_after_period(
+                $PERIOD, $prev_time, false, ['task' => 'alignment'], 'working');
     }
 }
 
-
-if ($CLI) exit;
-
-echo "\n\n";
-echo "event: done\n";
-echo "data: 0\n\n";
-ob_flush();
-flush();   
-
-
+$geojson_ar = array_map(
+    fn($res) => make_geojson($res, ['pd', 'pop_size']),
+    $results
+);
+$json = json_encode($geojson_ar);
+if ($json === '') $json = '[]';
+if ($CLI)
+    echo "result: {$json}".PHP_EOL;
+else {
+    echo "\n\n";
+    echo "event: done\n";
+    echo "data: {$json}\n\n";
+    ob_flush();
+    flush();
+}
 ?>

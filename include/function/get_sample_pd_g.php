@@ -69,7 +69,7 @@ function get_sample_pd_g($gen) {
                 unset($locations[$key]);
             }
         }
-        usleep(10000); // loop each 0.01s
+        // usleep(10000); // loop each 0.01s
     } while ($alignment_in_progress);
 
     // calculate pd

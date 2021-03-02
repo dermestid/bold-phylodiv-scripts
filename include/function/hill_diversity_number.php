@@ -13,7 +13,9 @@ function hill_diversity_number (int $hill_order) {
     switch ($hill_order) {
         case 0:
             return function ($gen) {
-                $total = $gen->current()['total'];
+                $first = $gen->current();
+                if ($first === null) return [null, 0];
+                $total = $first['total'];
                 $i = 0;
                 try {
                     foreach ($gen as $y) $i++;
@@ -23,7 +25,9 @@ function hill_diversity_number (int $hill_order) {
             };
         case 1:
             return function ($gen) {
-                $total = $gen->current()['total'];
+                $first = $gen->current();
+                if ($first === null) return [null, 0];
+                $total = $first['total'];
                 $shannon_wiener_index = 0;
                 try {
                     foreach ($gen as ['count' => $count]) {
@@ -36,7 +40,9 @@ function hill_diversity_number (int $hill_order) {
             };
         case 2:
             return function ($gen) {
-                $total = $gen->current()['total'];
+                $first = $gen->current();
+                if ($first === null) return [null, 0];
+                $total = $first['total'];
                 $simpson_index = 0;
                 try {
                     foreach ($gen as ['count' => $count]) {
@@ -49,7 +55,9 @@ function hill_diversity_number (int $hill_order) {
             };
         default:
             return function ($gen) {
-                $total = $gen->current()['total'];
+                $first = $gen->current();
+                if ($first === null) return [null, 0];
+                $total = $first['total'];
                 $hill_sum = 0;
                 try {
                     foreach ($gen as ['count' => $count]) {
