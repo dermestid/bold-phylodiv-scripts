@@ -13,11 +13,12 @@ function hill_diversity_number (int $hill_order) {
     switch ($hill_order) {
         case 0:
             return function ($gen) {
-                $first = $gen->current();
-                if ($first === null) return [null, 0];
-                $total = $first['total'];
                 $i = 0;
                 try {
+                    $first = $gen->current();
+                    if ($first === null) return [null, 0];
+                    $total = $first['total'];
+
                     foreach ($gen as $y) $i++;
                 } catch(Exception $e) { return [null, 0]; }
                 if ($i === 0) return [null, 0];
@@ -25,11 +26,12 @@ function hill_diversity_number (int $hill_order) {
             };
         case 1:
             return function ($gen) {
-                $first = $gen->current();
-                if ($first === null) return [null, 0];
-                $total = $first['total'];
                 $shannon_wiener_index = 0;
                 try {
+                    $first = $gen->current();
+                    if ($first === null) return [null, 0];
+                    $total = $first['total'];
+
                     foreach ($gen as ['count' => $count]) {
                         $p = $count / $total;
                         $shannon_wiener_index -= ($p * log($p));
@@ -40,11 +42,12 @@ function hill_diversity_number (int $hill_order) {
             };
         case 2:
             return function ($gen) {
-                $first = $gen->current();
-                if ($first === null) return [null, 0];
-                $total = $first['total'];
                 $simpson_index = 0;
                 try {
+                    $first = $gen->current();
+                    if ($first === null) return [null, 0];
+                    $total = $first['total'];
+
                     foreach ($gen as ['count' => $count]) {
                         $p = $count / $total;
                         $simpson_index += ($p * $p);
@@ -55,11 +58,12 @@ function hill_diversity_number (int $hill_order) {
             };
         default:
             return function ($gen) {
-                $first = $gen->current();
-                if ($first === null) return [null, 0];
-                $total = $first['total'];
                 $hill_sum = 0;
                 try {
+                    $first = $gen->current();
+                    if ($first === null) return [null, 0];
+                    $total = $first['total'];
+                    
                     foreach ($gen as ['count' => $count]) {
                         $p = $count / $total;
                         $hill_sum += ($p ** $hill_order);

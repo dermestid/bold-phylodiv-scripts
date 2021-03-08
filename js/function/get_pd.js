@@ -1,17 +1,17 @@
-export default function get_pd(dl, tax, scheme_key, subs, continuation) {
+export default function get_pd(dl, tax, scheme_key, subs, continuation, loc_str = "") {
 
     const pd_script = "script/get_pd.php";
 
-    const args = {
+    const args = new URLSearchParams({
         do_download: dl,
         taxon: tax,
+        subset: (loc_str !== ""),
         division_scheme_key: scheme_key,
-        subsample_size: subs
-    };
-    const query_string = new URLSearchParams(args);
-    const url = `${pd_script}?${query_string}`;
+        subsample_size: subs,
+        locations: loc_str
+    });
 
-    let source = new SSE(url);
+    let source = new SSE(pd_script, { payload: args });
 
     source.addEventListener("working", event => {
         const time = (new Date()).toLocaleTimeString();
@@ -27,6 +27,7 @@ export default function get_pd(dl, tax, scheme_key, subs, continuation) {
         source.close();
         const time = (new Date()).toLocaleTimeString();
         let report = `${time}: Get PD: Request failed. `;
+        console.log(event.data);
         if (event.data == "timeout") report += "Took too long.";
         report += "<br>";
         $("#result_container").prepend(report);
@@ -43,8 +44,10 @@ export default function get_pd(dl, tax, scheme_key, subs, continuation) {
         report += "Received PD data. <br>";
         $("#result_container").prepend(report);
 
-        const data = JSON.parse(event.data);
-        continuation(data);
+        if (event.data != "") {
+            const data = JSON.parse(event.data);
+            continuation(data);
+        }
     });
 
     source.stream();

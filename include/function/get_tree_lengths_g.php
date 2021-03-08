@@ -51,7 +51,7 @@ function get_tree_lengths_g(string $alignments, bool $save_trees = false, string
     
     try{
         // Run PAUP
-        $command =  $PAUP_PATH. ' ' . $nex_filename;    
+        $command =  $PAUP_PATH. ' ' . $nex_filename; // . ' -n';    
         $spec = [1 => ['pipe', 'w']];
         $proc = proc_open($command, $spec, $pipes);
         $paup_out = stream_get_contents($pipes[1]);

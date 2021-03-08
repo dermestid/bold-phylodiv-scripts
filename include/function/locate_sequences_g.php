@@ -7,12 +7,13 @@
 // with each $entry having $entry["fields"] a numeric array (not necessarily indexed)
 // which is suitable for $scheme->locate() and keys are as in $header
 //
-// yields [$entry, location]
+// yields array_flip($header) and then yields [$entry, location]
 
 function locate_sequences_g($gen, Division_Scheme $scheme) {
     // Take the first yield of $gen and don't rewind prior to the foreach
     $it = new NoRewindIterator($gen);
     $cols = array_flip($it->current());
+    yield $cols;
     $it->next();
 
     foreach ($it as $entry) {

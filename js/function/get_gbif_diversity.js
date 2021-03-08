@@ -1,8 +1,8 @@
 export default function get_gbif_diversity(tax, scheme, loc_str, c_update, c_complete) {
     if (get_gbif_diversity.cache === undefined)
         get_gbif_diversity.cache = {};
-    if (get_gbif_diversity.cache[`${tax} ${loc_str}`] != null)
-        return continuation(get_gbif_diversity.cache[`${tax} ${loc_str}`]);
+    if (get_gbif_diversity.cache[`${tax} ${scheme} ${loc_str}`] != null)
+        return c_complete(get_gbif_diversity.cache[`${tax} ${scheme} ${loc_str}`]);
 
     const gbif_diversity_script = "script/get_gbif_diversity.php";
     const args = new URLSearchParams({
@@ -19,6 +19,7 @@ export default function get_gbif_diversity(tax, scheme, loc_str, c_update, c_com
         source.close();
         const time = (new Date()).toLocaleTimeString();
         let report = `${time}: Get TD: Request failed. `;
+        console.log(event.data);
         if (event.data == "timeout") report += "Took too long. ";
         else if (event.data == "incorrect args") report += "Incorrect args were given. ";
         else if (event.data == "incorrect division scheme key") report += "Could not parse scheme key. ";

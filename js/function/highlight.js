@@ -1,4 +1,5 @@
 import highlight_off from "./highlight_off.js"
+import tooltip_text from "./tooltip_text.js";
 
 export default function highlight() {
 
@@ -25,12 +26,8 @@ export default function highlight() {
                 .attr("visibility", "hidden");
             d3.selectAll(".legend")
                 .attr("visibility", "hidden");
-            // .selectAll("g")
-            // .attr("visibility", "hidden");
             d3.selectAll(`g.${data_type}.${data_id}`)
                 .attr("visibility", "visible");
-            // .selectAll("g")
-            // .attr("visibility", "visible");
 
         } else if (s.indexOf("key") === 0) {
             d3.selectAll(`.highlightable.${s}`)
@@ -52,7 +49,7 @@ export default function highlight() {
                 .style("left", `${tx}px`)
                 .style("top", `${ty}px`)
                 .raise()
-                .html(circle.text());
+                .html(tooltip_text(circle.text()));
         }
     }
 }

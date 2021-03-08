@@ -1,6 +1,6 @@
 import highlight from "./highlight.js";
 import highlight_off from "./highlight_off.js";
-import pick_colour from "./pick_colour.js";
+import bar_path from "./bar_path.js";
 
 export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
 
@@ -21,16 +21,6 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
         const m = d3.min(s, acc);
         return (m >= 0) ? 0 : -(round(-m));
     };
-    const limits = (s, acc, keep_outliers = true) => {
-        const min_val = min(s, acc);
-        const max_val = d3.max(s, acc);
-        if (s.length <= 2 || keep_outliers) return [min_val, round(max_val)];
-        let without_max = [...s];
-        without_max.splice(d3.greatestIndex(s, acc), 1);
-        const second_biggest = d3.max(without_max, acc);
-        const max = (second_biggest * 1.5 < max_val) ? second_biggest : max_val;
-        return [min_val, round(max)];
-    };
 
     d3.select("body")
         .selectAll(".plot")
@@ -49,6 +39,19 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
         .attr("id", "plot_area")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+    svg.max_x = 0;
+    svg.max_y = 0;
+    svg.limits = (s, acc, keep_outliers = true) => {
+        const min_val = min(s, acc);
+        const max_val = d3.max(s, acc);
+        if (s.length <= 2 || keep_outliers) return [min_val, round(max_val)];
+        let without_max = [...s];
+        without_max.splice(d3.greatestIndex(s, acc), 1);
+        const second_biggest = d3.max(without_max, acc);
+        const max = (second_biggest * 1.5 < max_val) ? second_biggest : max_val;
+        return [min_val, round(max)];
+    };
+
     div.append("div")
         .attr("class", "tooltip")
         .style("background-color", "white")
@@ -63,21 +66,21 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
         .style("opacity", 0);
 
     // add axes
-    const xax = d3
+    svg.xax = d3
         .scaleLinear()
         .domain(lims.x)
         .range([0, width]);
     svg.append("g")
         .attr("id", "x_axis")
         .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(xax));
-    const yax = d3
+        .call(d3.axisBottom(svg.xax));
+    svg.yax = d3
         .scaleLinear()
         .domain(lims.y)
         .range([height, 0]);
     svg.append("g")
         .attr("id", "y_axis")
-        .call(d3.axisLeft(yax));
+        .call(d3.axisLeft(svg.yax));
 
     // add data containers
     svg.append("g")
@@ -87,9 +90,12 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
 
     svg.set_x = (data_id, xs, acc) => {
         // update axis
+        const [x_min, x_max] = svg.limits(xs, acc);
+        svg.max_x = Math.max(x_max, svg.max_x);
+        const yax = svg.yax;
         const xax = svg.xax = d3
             .scaleLinear()
-            .domain(limits(xs, acc, false))
+            .domain([x_min, svg.max_x])
             .range([0, width]);
         svg.select("#x_axis")
             .call(d3.axisBottom(xax));
@@ -123,9 +129,12 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
 
     svg.set_y = (data_id, ys, acc) => {
         // update axis
+        const [y_min, y_max] = svg.limits(ys, acc);
+        svg.max_y = Math.max(y_max, svg.max_y);
+        const xax = svg.xax;
         const yax = svg.yax = d3
             .scaleLinear()
-            .domain(limits(ys, acc))
+            .domain([y_min, svg.max_y])
             .range([height, 0]);
         svg.select("#y_axis")
             .call(d3.axisLeft(yax));
@@ -158,19 +167,63 @@ export default function make_plot(lims = { x: [0, 100], y: [0, 1] }) {
         return svg;
     };
 
+    svg.set_error_bars = (data_id, dataset, ci_acc_lower, ci_acc_upper, x_acc) => {
+        const xax = svg.xax;
+        const yax = svg.yax;
+
+        // get container (at bottom of points container)
+        let group = svg.select("g#points")
+            .select(`g.points.${data_id}`)
+            .select("g.error_bars");
+        if (group.empty())
+            group = svg.select("g#points")
+                .select(`g.points.${data_id}`)
+                .insert("g", "circle")
+                .attr("class", "error_bars");
+
+        // update error bars
+        group.selectAll("path.ci")
+            .data(dataset, d => d ? d.key : this.id.substring(3))
+            .join(
+                enter => enter
+                    .append("path")
+                    .attr("class", "ci")
+                    .attr("id", d => `ci_${d.key}`)
+                    .attr("stroke", "gray")
+                    .attr("stroke-width", 0.5)
+                    .attr("fill", "none")
+                    .attr("pointer-events", "none")
+                    .attr("d", d => bar_path(
+                        xax(x_acc(d)),
+                        yax(ci_acc_lower(d)),
+                        yax(ci_acc_upper(d))
+                    )),
+                update => update
+                    .attr("d", d => bar_path(
+                        xax(x_acc(d)),
+                        yax(ci_acc_lower(d)),
+                        yax(ci_acc_upper(d))
+                    ))
+            );
+        return svg;
+    };
+
     svg.set_points_colour = (data_id, colour) =>
         svg.select("g#points")
             .select(`g.points.${data_id}`)
             .selectAll("circle")
             .style("fill", colour);
 
-    svg.set_text = (data_id, text_set, acc, matcher) =>
-        svg.select("g#points")
+    svg.set_text = (data_id, text_set, acc, matcher) => {
+        let exit = svg.select("g#points")
             .select(`g.points.${data_id}`)
             .selectAll("circle")
             .data(text_set, matcher)
             .text(acc)
-            .exit().remove();
+            .exit();
+        exit.each(() => console.log(`removal of node in ${data_id}`));
+        return exit.remove();
+    };
 
     svg.draw_line = (slope, intercept, x_min, x_max) =>
         svg.select("g#line")
