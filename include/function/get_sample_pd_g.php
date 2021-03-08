@@ -69,13 +69,22 @@ function get_sample_pd_g($gen) {
                 unset($locations[$key]);
             }
         }
-        // usleep(10000); // loop each 0.01s
+        usleep(10000); // loop each 0.01s
     } while ($alignment_in_progress);
 
     // calculate pd
     $pd_gen = get_tree_lengths_g($nexus_string);
     foreach (both($locations, $pd_gen) as [$loc, $pd]) {
-        yield [true, '', ['location' => $loc, 'pd' => $pd, 'pop_size' => $loc['pop_size']]];
+        yield [
+            true, 
+            '', 
+            [
+                'location' => $loc, 
+                'pd' => $pd, 
+                'pd_observations' => $loc['pop_size'], 
+                'mean_coord' => $loc['mean_coord']
+            ]
+        ];
     }
 }
 

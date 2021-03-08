@@ -3,16 +3,16 @@ export default function add_td_data(data, id, map, plot) {
     // Update dataset
     if (add_td_data.cache === undefined)
         add_td_data.cache = {};
-    if (add_td_data.cache[id] === undefined)
+    if (add_td_data.cache[id] == undefined)
         add_td_data.cache[id] = data;
     else {
         for (const datum of data) {
-            if (datum === undefined) { console.log("good!"); continue; }
+            if (datum == undefined) { continue; }
             let found = false;
             for (const cached of add_td_data.cache[id])
-                if (cached.key === datum.key) found = true;
-            if (!found)
-                add_td_data.cache[id].push(datum);
+                if (cached.key === datum.key) { found = true; break; }
+
+            if (found === false) add_td_data.cache[id].push(datum);
         }
     }
 

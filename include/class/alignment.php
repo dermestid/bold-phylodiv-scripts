@@ -1,6 +1,7 @@
 <?php
 
 require_once '../include/class/process.php';
+require_once '../include/config/paup.php'; // $CLUSTAL_PATH
 
 // groups functions for asynchronously aligning
 class Alignment {

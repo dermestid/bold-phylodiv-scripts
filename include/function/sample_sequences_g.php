@@ -1,7 +1,8 @@
 <?php
 
 // generator which outputs multiple simple random samples of size $k
-// from a iterator $gen which yields [$data, $pop_id]
+// from a iterator $gen which first yields an associative column array $c,
+// then yields [$data, $pop_id]
 // where $pop_id is an object/array with field "key"
 // where $key = $pop_id["key"] is used to sort $data
 // into different populations which will be sampled independently.
@@ -12,9 +13,13 @@
 //
 // Data belonging to populations smaller than k will not be yielded.
 
-function sample_sequences_g($gen, $k) {
+function sample_sequences_g($gen, $k, $summary_fn, $summary_name) {
     $reservoirs = [];
     $i = []; // population size seen so far for each different key
+
+    $gen = new NoRewindIterator($gen);
+    $cols = $gen->current();
+    $gen->next();
     foreach ($gen as [$data, $pop_id]) {
 
         $key = $pop_id['key'];
@@ -39,6 +44,7 @@ function sample_sequences_g($gen, $k) {
     foreach ($reservoirs as $key => $sample) {
         if ($i[$key] >= $k) {
             // if reservoir is full
+            $sample[0][$summary_name] = $summary_fn($sample[1], $cols);
             $sample[0]['pop_size'] = $i[$key];
             yield $key => $sample;
         }

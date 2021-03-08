@@ -1,37 +1,61 @@
+import coord_rect_area from "./coord_rect_area.js";
 import quantile from "./quantile.js";
 
-export default function label_points(id, pd_data, td_data, map, plot) {
+export default function label_points(id, pd_td_data, pd_acc, td_acc, map, plot, se_acc, ci_acc) {
 
-    const td = d => d.properties.td;
-    const pd = d => {
-        for (const pd_d of pd_data)
-            if (pd_d.key === d.key)
-                return pd_d.properties.pd;
-    };
-
-    const pds_sorted = pd_data.map(d => d.properties.pd).sort((a, b) => a - b);
-    const tds_sorted = td_data.map(td).sort((a, b) => a - b);
+    const pds_sorted = pd_td_data.map(pd_acc).sort((a, b) => a - b);
+    const tds_sorted = pd_td_data.map(td_acc).sort((a, b) => a - b);
 
     const quantiles = 10;
     const q_diff = d => {
-        const a = quantile(pd(d), pds_sorted, quantiles);
-        const b = quantile(td(d), tds_sorted, quantiles);
+        const a = quantile(pd_acc(d), pds_sorted, quantiles);
+        const b = quantile(td_acc(d), tds_sorted, quantiles);
         return { pd: a, td: b, diff: (a - b) };
     };
 
-    const quantile_data = td_data.map(d => {
+    const pd_count_acc = d => d.properties.pd_observations;
+    const td_count_acc = d => d.properties.td_observations;
+    const mean_lat_acc = d => d.properties.mean_coord.lat;
+    const mean_lon_acc = d => d.properties.mean_coord.lon;
+
+    const summary_json = (d, q) => {
+        let summary = {
+            id: id,
+            pd: pd_acc(d),
+            pd_count: pd_count_acc(d),
+            td: td_acc(d),
+            td_count: td_count_acc(d),
+            pd_quantile: q.pd + 1,
+            td_quantile: q.td + 1,
+            quantiles: quantiles,
+            difference: q.diff,
+            mean_lat: mean_lat_acc(d),
+            mean_lon: mean_lon_acc(d)
+        };
+        if (se_acc !== undefined)
+            summary.pd_se = se_acc(d);
+        if (ci_acc !== undefined) {
+            summary.pd_ci_lower = ci_acc(d)[0];
+            summary.pd_ci_upper = ci_acc(d)[1];
+        }
+        const geo = coord_rect_area(d.geometry.coordinates);
+        for (const p in geo) summary[p] = geo[p];
+        return JSON.stringify(summary);
+    };
+
+    const quantile_data = pd_td_data.map(d => {
         const q = q_diff(d);
         const datum = {
             type: "Feature",
             key: d.key,
             properties: {
-                pd: pd(d),
-                td: td(d),
+                pd: pd_acc(d),
+                td: td_acc(d),
                 pd_quantile: q.pd + 1,
                 td_quantile: q.td + 1,
                 difference: q.diff,
             },
-            text: `PD=${pd(d)} (${q.pd + 1}/${quantiles})<br>TD=${td(d)} (${q.td + 1}/${quantiles})`,
+            text: summary_json(d, q),
             geometry: d.geometry
         };
         return datum;
